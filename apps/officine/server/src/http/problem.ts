@@ -30,6 +30,7 @@ export function registerErrorHandling(app: FastifyInstance): void {
       return;
     }
     if (fe.statusCode && fe.statusCode >= 400 && fe.statusCode < 500) {
+      const code = fe.statusCode === 404 ? 'not_found' : fe.statusCode === 413 ? 'payload_too_large' : 'validation_failed';
       reply
         .status(fe.statusCode)
         .type('application/problem+json')
@@ -37,7 +38,7 @@ export function registerErrorHandling(app: FastifyInstance): void {
           type: 'about:blank',
           title: 'Requête refusée',
           status: fe.statusCode,
-          code: fe.statusCode === 404 ? 'not_found' : 'validation_failed',
+          code,
           detail: fe.message,
         });
       return;

@@ -34,6 +34,15 @@ npm test                                      # Vitest
 npm run verify-ledger -- --data ./data-local  # 0 = journal intact, 2 = défaut détecté
 ```
 
+Import du catalogue (I-04). Le serveur doit être à l'arrêt ou l'import attendra le verrou d'écriture ; le fichier est lu localement, jamais téléchargé :
+
+```
+npm run import-catalog -- --file ../data/catalogue.csv --data ./data-local
+# 0 = import complet, 3 = lignes rejetées (rapport imprimé), 2 = usage, 1 = erreur
+```
+
+Format attendu : annexe I (`ref_code;name;category` obligatoires, `;` séparateur, UTF-8 avec ou sans BOM).
+
 ## Ce qui est construit
 
 | Domaine | Exigences | Où |
@@ -43,5 +52,7 @@ npm run verify-ledger -- --data ./data-local  # 0 = journal intact, 2 = défaut 
 | Configuration initiale | I-02, I-03 | `domain/setup.ts` |
 | Authentification, sessions, droits | A-01 à A-08 | `domain/auth.ts`, `security/*`, `http/hooks.ts` |
 | Comptes | U-01 à U-03 | `domain/users.ts`, `http/routes/users.ts` |
+| Catalogue : recherche, fiche, prix | C-01 à C-06 | `domain/search.ts`, `domain/catalog.ts`, `domain/gs1.ts`, `http/routes/catalog.ts` |
+| Import du référentiel CSV | I-04 | `domain/csv.ts`, `domain/catalogImport.ts`, `scripts/import-catalog.ts` |
 
 Le répertoire de données contient la base, les clés (`keys/`, droits 0600) et les certificats (`tls/`). Il n'est jamais servi par HTTP.

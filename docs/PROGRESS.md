@@ -13,7 +13,7 @@ cd apps/officine
 npm ci
 npm run typecheck   # ok
 npm run lint        # ok
-npm test            # 166 tests, 7 fichiers, ok
+npm test            # 209 tests (207 verts, 2 ignorés), 11 fichiers, ok
 ```
 
 **Première action de Qoder** : `git init` à la racine `visionpharma/`, commit initial `chore: socle J1-J2 (I, A, U, J)`, puis reprendre à **J3 (catalogue : I-04, C-01 à C-06)**.
@@ -25,6 +25,15 @@ Conventions déjà en place, à respecter :
 - `server/test/helpers.ts` → `makeApp()`, `setupTitulaire()`, `createAndLogin()`, `reauth()` : nœud complet avec de vraies clés dans un répertoire temporaire.
 - Les erreurs sont des `AppError(code, titre, détail)` (`server/src/errors.ts`) ; les nouveaux codes vont aussi dans l'annexe D.
 
+## J3 — catalogue (26 octobre 2026)
+
+I-04 et C-01 à C-06 sont faits. 43 tests ajoutés (209 au total, 11 fichiers) : `test/gs1.test.ts` (C-04), `test/catalog.import.test.ts` (I-04), `test/catalog.domain.test.ts` (C-02, C-05), `test/catalog.http.test.ts` (C-01, C-03, C-06, I-04 HTTP, fiche détaillée).
+
+- Migration `003_catalog.sql` : `products.last_activity_at`, index `idx_products_activity`, table `catalog_imports` (audit des imports, annexe B).
+- Domaines : `search.ts` (lecture, p95 < 150 ms sur 50 000 fiches), `gs1.ts` (C-04), `csv.ts` (parseur `;` tolérant au BOM), `catalog.ts` (activation, association, fiche locale, prix, balayage C-05), `catalogImport.ts` (I-04).
+- HTTP : `http/routes/catalog.ts` (7 routes, `config.permission` sur chacune), corps CSV 50 Mo (`app.ts`), codes `barcode_taken`, `invalid_barcode`, `payload_too_large`.
+- Tâche quotidienne `jobs/catalog.ts` (mise en sommeil à minuit heure de Douala), CLI `npm run import-catalog -- --file <csv>`.
+
 ## État
 
 | ID | Prio | Statut | Test | Commit | Notes |
@@ -32,7 +41,7 @@ Conventions déjà en place, à respecter :
 | I-01 | M | done | init.test.ts « I-01 … » | | Autorité locale ECDSA P-256 + certificat serveur générés avec node:crypto seul (security/x509.ts), validés par openssl et une poignée de main TLS. |
 | I-02 | M | done | auth.http.test.ts « I-02 … » | | API faite (POST /setup, GET /setup/status, GET /setup/totp-secret). Écran : UI-01. |
 | I-03 | M | doing | init.test.ts « I-03 … », auth.http.test.ts « I-03 … » | | Clé générée, affichée une fois, enveloppe recovery.wrap, confirmation exigée à la configuration. Reste : critère B-04 (restauration sur machine neuve). |
-| I-04 | M | todo |  | |  |
+| I-04 | M | done | catalog.import.test.ts « I-04 … », catalog.http.test.ts « I-04 … » | | `domain/catalogImport.ts` : CSV `;` UTF-8 (BOM toléré), validation ligne par ligne, réimport par `ref_code` qui ne touche ni stock, ni prix local, ni seuils ; une seule transaction, rapport capé à 1 000 erreurs + `catalog.imports` + `catalog.imported` (SHA-256). CLI `npm run import-catalog`. 50 000 lignes : test « 50 000 lignes importées en moins de 60 secondes ». |
 | I-05 | M | done | startup.test.ts « I-05 … » | | server/src/tls.ts ; suites AEAD seulement en TLS 1.2 ; TLS 1.1 refusé (vérifié à la main). |
 | I-06 | M | done | init.test.ts « I-06 … », auth.http.test.ts « I-06 … » | | Empreinte publique dans GET /setup/status et GET /system/info. Affichage : UI-02 et UI-14. |
 | A-01 | M | done | auth.http.test.ts « A-01 … », passwords.test.ts (vecteurs RFC 6238) | | Défi TOTP en mémoire (5 min, usage unique). Rejeu d’un code refusé (users.totp_last_counter). |
@@ -46,12 +55,12 @@ Conventions déjà en place, à respecter :
 | U-01 | M | done | auth.http.test.ts « U-01 … » | | API faite. Écran : UI-13. Création = mot de passe temporaire, changement imposé (QUESTIONS Q-04). |
 | U-02 | M | done | auth.http.test.ts « U-02 … » | |  |
 | U-03 | M | done | rbac.test.ts (comparaison cellule par cellule avec docs/05 §6) | |  |
-| C-01 | M | todo |  | |  |
-| C-02 | M | todo |  | |  |
-| C-03 | M | todo |  | |  |
-| C-04 | M | todo |  | |  |
-| C-05 | M | todo |  | |  |
-| C-06 | M | todo |  | |  |
+| C-01 | M | done | catalog.http.test.ts « C-01 … » | | `domain/search.ts` : `search_text` normalisé (casse/accents), multi-termes, codes-barres, actifs d'abord, curseur opaque. p95 < 150 ms sur 50 000 fiches mesuré par le test. |
+| C-02 | M | done | catalog.domain.test.ts « C-02 … » | | `activateProduct` exige la transaction de l'événement réel (échoue sinon), cause obligatoire parmi `reception`, `inventory`, `order`, `regul_sale`. Une recherche n'active rien. |
+| C-03 | M | done | catalog.http.test.ts « C-03 … » | | `GET /products/by-barcode/:code` → 404, puis association (`catalog.barcode_linked`) ou fiche locale (`local_only=1`, `catalog.local_item_created`). `409 barcode_taken` si le code est pris. Réservé à `catalog.link` (titulaire, pharmacien, préparateur). |
+| C-04 | M | done | gs1.test.ts « C-04 … » | | `domain/gs1.ts` : AI 01/10/17/21, avec ou sans FNC1/GS, préfixe de symbologie `]xx` toléré, clé de contrôle mod-10 (GTIN 8/12/13/14), `00` = dernier jour du mois. |
+| C-05 | M | done | catalog.domain.test.ts « C-05 … » | | `last_activity_at` (migration 003) ; `sweepSleepingProducts` endort après 12 mois sans s'appuyer sur les fiches dormantes, horloge injectée. Tâche quotidienne `jobs/catalog.ts` à minuit heure de Douala. |
+| C-06 | M | done | catalog.http.test.ts « C-06 … » | | `PATCH /products/:id/price` sous `price.edit` (titulaire, pharmacien), `suggested_price` toujours visible, `catalog.price_changed` par changement, aucun événement si le prix est identique. |
 | C-07 | S | todo |  | |  |
 | S-01 | M | todo |  | |  |
 | S-02 | M | todo |  | |  |

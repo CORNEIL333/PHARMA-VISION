@@ -4,6 +4,7 @@ import { loadConfig } from './config.js';
 import { resolveTls, TLS12_CIPHERS } from './tls.js';
 import { openDb, writeTx } from './db/index.js';
 import { Ledger } from './domain/ledger.js';
+import { scheduleDailyCatalogSweep } from './jobs/catalog.js';
 import { scheduleDailyCheckpoint } from './jobs/checkpoints.js';
 import { checkKeyPermissions, loadNodeKeys, paths } from './security/keys.js';
 import type { Services } from './services.js';
@@ -41,9 +42,13 @@ async function start(env: NodeJS.ProcessEnv = process.env): Promise<void> {
   if (!tls) app.log.warn('VP_REQUIRE_TLS=false : serveur en HTTP SIMPLE. Interdit en production (I-05).');
 
   const stopJob = scheduleDailyCheckpoint(s, (e) => app.log.error({ err: e }, 'point de contrôle quotidien'));
+  const stopCatalogJob = scheduleDailyCatalogSweep(s, (e) =>
+    app.log.error({ err: e }, 'mise en sommeil du catalogue'),
+  );
   const shutdown = async (sig: string) => {
     app.log.info(`${sig} reçu : arrêt propre`);
     stopJob();
+    stopCatalogJob();
     try {
       writeTx(db, () => ledger.checkpoint());
     } catch (e) {

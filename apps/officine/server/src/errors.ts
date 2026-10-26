@@ -27,7 +27,10 @@ export type ErrorCode =
   | 'payment_mismatch'
   | 'rate_limited'
   | 'db_busy'
-  | 'internal_error';
+  | 'internal_error'
+  | 'barcode_taken'
+  | 'invalid_barcode'
+  | 'payload_too_large';
 
 const STATUS: Record<ErrorCode, number> = {
   validation_failed: 400,
@@ -55,6 +58,9 @@ const STATUS: Record<ErrorCode, number> = {
   rate_limited: 429,
   db_busy: 503,
   internal_error: 500,
+  barcode_taken: 409,
+  invalid_barcode: 422,
+  payload_too_large: 413,
 };
 
 export class AppError extends Error {

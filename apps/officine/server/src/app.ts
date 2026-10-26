@@ -6,9 +6,13 @@ import { AuthService } from './domain/auth.js';
 import { registerHooks } from './http/hooks.js';
 import { registerErrorHandling } from './http/problem.js';
 import { authRoutes } from './http/routes/auth.js';
+import { catalogRoutes } from './http/routes/catalog.js';
 import { systemRoutes } from './http/routes/system.js';
 import { userRoutes } from './http/routes/users.js';
 import type { Services } from './services.js';
+
+/** I-04 : un import de 50 000 lignes doit passer ; le corps est un tampon, jamais un chemin. */
+export const CSV_BODY_LIMIT = 50 * 1024 * 1024;
 
 /** Construit l'instance Fastify (sans écouter) : utilisable telle quelle dans les tests (app.inject). */
 export async function buildApp(
@@ -24,6 +28,11 @@ export async function buildApp(
   } as FastifyServerOptions);
 
   await app.register(cookie);
+  app.addContentTypeParser(
+    ['text/csv', 'application/csv'],
+    { parseAs: 'buffer', bodyLimit: CSV_BODY_LIMIT },
+    (_req, body, done) => done(null, body),
+  );
   registerErrorHandling(app);
   registerHooks(app, s);
 
@@ -31,6 +40,7 @@ export async function buildApp(
   systemRoutes(app, s);
   authRoutes(app, s, authSvc);
   userRoutes(app, s);
+  catalogRoutes(app, s);
 
   await app.ready();
   return app;

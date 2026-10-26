@@ -35,8 +35,11 @@ Format RFC 9457 (`application/problem+json`) :
 | `setup_done` | 409 | Configuration initiale déjà faite |
 | `last_titulaire` | 409 | Le dernier titulaire actif ne peut être ni désactivé ni rétrogradé |
 | `username_taken` | 409 | Identifiant déjà utilisé |
+| `barcode_taken` | 409 | Code-barres déjà rattaché à une autre fiche (champ `product_id` : fiche propriétaire) |
+| `payload_too_large` | 413 | Corps de requête au-delà de la limite (1 Mo en JSON, 50 Mo pour l'import CSV) |
 | `weak_password` | 422 | Mot de passe refusé (champ `reason` : `too_short`, `common`, `contains_username`, `too_simple`, `too_long`) |
 | `invalid_totp` | 422 | Code TOTP incorrect lors d'un enrôlement |
+| `invalid_barcode` | 422 | Code-barres illisible : vide, GTIN de longueur ou de clé fausse, chaîne GS1 dont un AI, une date ou un champ est invalide |
 | `payment_mismatch` | 422 | La somme des paiements est différente du total |
 | `rate_limited` | 429 | Trop de tentatives |
 | `db_busy` | 503 | Base occupée ; réessayer |
@@ -89,14 +92,14 @@ Format RFC 9457 (`application/problem+json`) :
 
 | Méthode et chemin | Permission | Rôle |
 |---|---|---|
-| `GET /products?q=&status=&cursor=` | toute session | Recherche (dormant compris) |
-| `GET /products/by-barcode/:code` | toute session | Recherche par code ou chaîne GS1 décodée |
+| `GET /products?q=&status=&cursor=&limit=` | toute session | Recherche (dormant compris) : nom, DCI, dosage, forme, présentation et codes-barres, insensible à la casse et aux accents ; les fiches actives passent avant les dormantes puis les endormies. `limit` 1 à 50 (20 par défaut), pagination par curseur opaque (`next_cursor`), p95 visé < 150 ms sur 50 000 fiches |
+| `GET /products/by-barcode/:code` | toute session | Recherche par code ou chaîne GS1 décodée (AI 01, 10, 17, 21, avec ou sans FNC1/GS, préfixe de symbologie toléré). Renvoie `{ found, code, gs1, product }` : `found=false` et le décodage `gs1` (lot, péremption, série) quand le code est inconnu — c'est la proposition de C-03 ; `422 invalid_barcode` si le code est illisible |
 | `GET /products/:id` | toute session | Fiche, stock par lot (coûts masqués selon le rôle) |
-| `POST /products/local` | Associer un code, créer une fiche locale | Fiche locale |
-| `POST /products/:id/barcodes` | idem | Association d'un code-barres |
-| `PATCH /products/:id/price` | Modifier un prix | Prix de vente |
+| `POST /products/local` | Associer un code, créer une fiche locale | Fiche locale (`local_only=1`), active d'emblée ; `409 barcode_taken` si le code est déjà pris |
+| `POST /products/:id/barcodes` | idem | Association d'un code-barres ; renvoie `{ created, product }`, `created=false` si l'association existait déjà |
+| `PATCH /products/:id/price` | Modifier un prix | Prix de vente (entier ≥ 0, XAF) ; un événement `catalog.price_changed` par changement, aucun événement si le prix est identique |
 | `PATCH /products/:id/thresholds` | Modifier un prix | Seuils min et max |
-| `POST /catalog/import` | Paramètres (R) | Import d'un CSV (corps en flux, 50 Mo au plus) |
+| `POST /catalog/import` | Paramètres (R) | Import d'un CSV (`text/csv` ou `application/csv`, corps en flux, 50 Mo au plus). Nom de fichier facultatif dans l'en-tête `X-Filename` (jamais utilisé comme chemin). Réponse : rapport d'import (voir annexe I) |
 
 ### Stock
 

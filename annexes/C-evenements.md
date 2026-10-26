@@ -40,12 +40,12 @@ Dans la base du nœud, un événement est une ligne de `events` (document 06, se
 | `security.account_locked` | Verrouillage | utilisateur, durée |
 | `security.reauth` | Ré-authentification | utilisateur, action visée |
 | `user.created` / `user.updated` / `user.disabled` / `user.enabled` / `user.password_reset` / `user.sessions_revoked` | Gestion des comptes | utilisateur cible, champs modifiés (jamais le mot de passe) |
-| `catalog.imported` | Import du catalogue | nombre de lignes importées, rejetées, empreinte du fichier |
+| `catalog.imported` | Import du catalogue | `import_id`, `filename`, lignes totales, insérées, mises à jour, rejetées, colonnes inconnues, `truncated`, empreinte SHA-256 du fichier |
 | `catalog.item_activated` | Activation d'une fiche | `product_id`, cause (`reception`, `inventory`, `order`, `regul_sale`) |
-| `catalog.item_sleeping` | Mise en sommeil | `product_id` |
-| `catalog.barcode_linked` | Association d'un code-barres | `code`, `product_id` |
-| `catalog.local_item_created` | Fiche locale | fiche complète |
-| `catalog.price_changed` | Changement de prix | `product_id`, ancien et nouveau prix |
+| `catalog.item_sleeping` | Mise en sommeil | `product_id` (acteur nul : tâche automatique) |
+| `catalog.barcode_linked` | Association d'un code-barres | `code`, `product_id`, `kind` (`gtin`, `interne`, `autre`) |
+| `catalog.local_item_created` | Fiche locale | `product_id`, `name`, `category`, `barcode`, `local_only` |
+| `catalog.price_changed` | Changement de prix | `product_id`, `old_price`, `new_price` |
 | `catalog.thresholds_changed` | Seuils modifiés | `product_id`, min, max |
 | `supplier.created` / `supplier.updated` | Fournisseurs | fiche |
 | `order.created` / `order.sent` / `order.cancelled` | Bons de commande | `po_id`, lignes |

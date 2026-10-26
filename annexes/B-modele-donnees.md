@@ -28,6 +28,7 @@ PRAGMA trusted_schema = OFF;
 | `settings` | Paramètres de l'officine (politique d'ordonnance, ventes en régularisation, plafond de remise…) | Officine |
 | `users`, `sessions` | Comptes, rôles, sessions | Officine (L0), cœur (L1) |
 | `products`, `barcodes` | Catalogue (dormant, actif, endormi), codes-barres | Cœur (référentiel) et officine (prix, seuils) |
+| `catalog_imports` | Journal des imports du référentiel (une ligne par fichier, avec son empreinte) — ajouté par `003_catalog.sql` | Officine |
 | `lots`, `stock_movements` | Lots et mouvements ; stock = somme | Officine |
 | `recalls` | Rappels de lots | Cœur (L1) et officine |
 | `suppliers`, `purchase_orders`, `po_lines` | Fournisseurs et commandes | Officine |
@@ -102,13 +103,15 @@ CREATE TABLE products (
   max_qty         INTEGER NOT NULL DEFAULT 0,
   status          TEXT NOT NULL DEFAULT 'dormant' CHECK (status IN ('dormant','active','sleeping')),
   activated_at    TEXT,
+  last_activity_at TEXT,                       -- C-05, ajouté par 003_catalog.sql : dernier événement réel
   local_only      INTEGER NOT NULL DEFAULT 0,  -- fiche créée localement, à valider par le référentiel
-  search_text     TEXT NOT NULL DEFAULT '',
+  search_text     TEXT NOT NULL DEFAULT '',     -- nom + DCI + dosage + forme + présentation, sans accents ni casse
   created_at      TEXT NOT NULL,
   updated_at      TEXT NOT NULL
 );
 CREATE INDEX idx_products_status ON products(status);
 CREATE INDEX idx_products_search ON products(search_text);
+CREATE INDEX idx_products_activity ON products(status, last_activity_at);
 
 CREATE TABLE barcodes (
   code       TEXT PRIMARY KEY,
@@ -116,6 +119,24 @@ CREATE TABLE barcodes (
   kind       TEXT NOT NULL DEFAULT 'gtin' CHECK (kind IN ('gtin','interne','autre'))
 );
 CREATE INDEX idx_barcodes_product ON barcodes(product_id);
+
+-- Journal des imports du référentiel (I-04) : une ligne par fichier importé, avec son empreinte.
+-- Ajouté par 003_catalog.sql (comme last_activity_at et idx_products_activity).
+CREATE TABLE catalog_imports (
+  id              TEXT PRIMARY KEY,
+  filename        TEXT,                     -- nom fourni par le client, jamais un chemin
+  sha256          TEXT NOT NULL,            -- empreinte du fichier reçu
+  lines_total     INTEGER NOT NULL,
+  inserted        INTEGER NOT NULL,
+  updated         INTEGER NOT NULL,
+  rejected        INTEGER NOT NULL,
+  unknown_columns TEXT NOT NULL DEFAULT '[]',
+  errors          TEXT NOT NULL DEFAULT '[]',  -- 1 000 entrées au plus, champ `truncated` du rapport
+  conflicts       TEXT NOT NULL DEFAULT '[]',  -- codes-barres déjà rattachés à une autre fiche
+  actor           TEXT REFERENCES users(id),
+  at              TEXT NOT NULL
+);
+CREATE INDEX idx_catalog_imports_at ON catalog_imports(at);
 
 -- ---------------------------------------------------------------- Stock
 CREATE TABLE lots (
