@@ -1,0 +1,11 @@
+node_modules/
+dist/
+data-local/
+*.db
+*.db-wal
+*.db-shm
+.env
+
+# Racine
+.DS_Store
+Thumbs.db

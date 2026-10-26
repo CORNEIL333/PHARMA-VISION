@@ -1,0 +1,17 @@
+# QUESTIONS — décisions prises sans humain
+
+Chaque ligne : la question, l'option retenue (la plus sûre), pourquoi, comment revenir dessus.
+
+| # | Question | Option retenue | Pourquoi | Pour changer |
+|---|---|---|---|---|
+| Q-01 | Les PRAGMA de l'annexe B sont en tête du schéma ; `journal_mode` ne peut pas s'exécuter dans une transaction de migration. | PRAGMA retirés de `001_init.sql`, posés par `db/index.ts` à chaque ouverture. | Les pragmas `synchronous` et `foreign_keys` ne sont pas persistants : il faut les poser à chaque connexion de toute façon. | — |
+| Q-02 | A-02 : la liste des 10 000 mots de passe courants ne contient que 10 entrées de 12 caractères ou plus. | En plus de la correspondance exacte, refus d'une entrée de la liste entourée de chiffres ou de symboles (« password2026! ») et des mots de passe de moins de 5 caractères distincts. | Sinon la règle n'arrête presque rien. | `security/passwords.ts`, `checkPasswordPolicy`. |
+| Q-03 | A-01 / A-04 : faut-il dire à l'utilisateur que son compte est verrouillé ? | Non : message générique unique « Identifiant, mot de passe ou code incorrect, ou compte temporairement verrouillé ». | Ne révèle ni l'existence du compte ni son état. | `domain/auth.ts`, `GENERIC`. |
+| Q-04 | U-01 : comment le titulaire donne-t-il un mot de passe à un nouveau compte ? | Le serveur génère un mot de passe temporaire de 16 caractères, affiché une fois ; changement imposé à la première connexion. | Le titulaire ne choisit ni ne connaît le mot de passe définitif. | `domain/users.ts`, `createUser`. |
+| Q-05 | I-02 / I-03 : comment confirmer la clé de récupération ? | La configuration initiale exige de recopier la clé entière ; le serveur vérifie qu'elle déchiffre `recovery.wrap` et redonne la clé de données. | Seule preuve que la clé a bien été notée. | `domain/setup.ts`. |
+| Q-06 | I-02 : quel événement de journal pour la configuration ? | `system.initialized` (avec `pharmacy_name`) est écrit à la configuration, pas à `init`, car le nom de l'officine n'est connu qu'à ce moment. | Annexe C : contenu `node_id`, `schema`, `pharmacy_name`. | `domain/setup.ts`. |
+| Q-07 | Un titulaire créé après la configuration n'a pas encore de TOTP. | Sa session est limitée à l'enrôlement TOTP (`totp_enrollment_required`) tant qu'il ne l'a pas activé. | TOTP obligatoire pour le titulaire (spec §5.2). | `security/sessions.ts`, `restriction`. |
+| Q-08 | Changement de rôle d'un utilisateur. | Toutes ses sessions sont coupées. | Les droits changent : on évite une session avec des droits périmés. | `domain/users.ts`, `updateUser`. |
+| Q-09 | Matrice : la liste des comptes (GET /users) est-elle soumise à la ré-authentification ? | Oui : « Gérer les comptes » vaut R pour le titulaire, lecture comprise. | Lecture fidèle de la matrice. | Ajouter une action `user.list` (O) dans la matrice **et** la spec. |
+| Q-10 | Codes d'erreur ajoutés à l'annexe D. | `invalid_credentials`, `setup_required`, `setup_done`, `password_change_required`, `totp_enrollment_required`, `weak_password`, `invalid_totp`, `last_titulaire`, `username_taken`, `internal_error`. | Besoin de codes stables pour l'interface. | `server/src/errors.ts` et annexe D. |
+| Q-11 | Sous Windows (poste de développement), les droits 0600 ne s'appliquent pas. | Avertissement au démarrage au lieu d'un refus ; en production (Ubuntu) le refus s'applique. | Permet de développer sous Windows sans affaiblir la production. | `security/keys.ts`, `checkKeyPermissions`. |

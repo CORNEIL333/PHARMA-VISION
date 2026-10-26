@@ -1,0 +1,163 @@
+<!-- VisionPharma · documentation projet · v3.1 · 2026-10-26 -->
+
+# Annexe I2 — Échantillon de catalogue de démarrage
+
+147 présentations courantes au format de l'[annexe I](I-format-import-catalogue.md) : 127 médicaments construits à partir des molécules de la liste modèle des médicaments essentiels de l'OMS, et 20 dispositifs médicaux.
+
+**Usage** : l'agent copie le bloc ci-dessous tel quel dans `apps/officine/data/catalogue-echantillon.csv`. Il ne doit pas inventer d'autres produits ni de GTIN.
+
+**Limites, à dire aux utilisateurs** :
+- Ce n'est pas le catalogue officiel du Cameroun. Le statut d'autorisation, les noms commerciaux et les prix doivent venir d'un grossiste-répartiteur ou de la DPML.
+- Les colonnes `suggested_price` et `gtin` sont vides exprès : les prix sont saisis par l'officine, et les codes-barres sont associés au premier scan (exigence C-03).
+- `rx_required` vaut 1 pour tous les médicaments, conformément à la règle de l'ordonnance obligatoire. `sensitive` marque les produits à risque de détournement. La `criticity` est une première proposition, à valider par le pharmacien référent.
+
+```csv
+ref_code;name;dci;strength;form;presentation;category;rx_required;sensitive;criticity;storage;suggested_price;gtin
+VP-ECH-0001;Paracétamol 500 mg comprimé, boîte de 16;paracétamol;500 mg;comprimé;boîte de 16;medicament;1;0;3;ambiant;;
+VP-ECH-0002;Paracétamol 1 g comprimé, boîte de 8;paracétamol;1 g;comprimé;boîte de 8;medicament;1;0;3;ambiant;;
+VP-ECH-0003;Paracétamol 120 mg/5 ml sirop, flacon de 100 ml;paracétamol;120 mg/5 ml;sirop;flacon de 100 ml;medicament;1;0;2;ambiant;;
+VP-ECH-0004;Paracétamol 10 mg/ml solution pour perfusion, flacon de 100 ml;paracétamol;10 mg/ml;solution pour perfusion;flacon de 100 ml;medicament;1;0;2;ambiant;;
+VP-ECH-0005;Ibuprofène 400 mg comprimé, boîte de 20;ibuprofène;400 mg;comprimé;boîte de 20;medicament;1;0;3;ambiant;;
+VP-ECH-0006;Ibuprofène 100 mg/5 ml suspension buvable, flacon de 150 ml;ibuprofène;100 mg/5 ml;suspension buvable;flacon de 150 ml;medicament;1;0;3;ambiant;;
+VP-ECH-0007;Acide acétylsalicylique 100 mg comprimé, boîte de 30;acide acétylsalicylique;100 mg;comprimé;boîte de 30;medicament;1;0;2;ambiant;;
+VP-ECH-0008;Diclofénac 50 mg comprimé gastrorésistant, boîte de 30;diclofénac;50 mg;comprimé gastrorésistant;boîte de 30;medicament;1;0;3;ambiant;;
+VP-ECH-0009;Tramadol 50 mg gélule, boîte de 30;tramadol;50 mg;gélule;boîte de 30;medicament;1;1;2;ambiant;;
+VP-ECH-0010;Codéine + paracétamol 30 mg/500 mg comprimé, boîte de 16;codéine + paracétamol;30 mg/500 mg;comprimé;boîte de 16;medicament;1;1;3;ambiant;;
+VP-ECH-0011;Morphine 10 mg/ml solution injectable, ampoule de 1 ml;morphine;10 mg/ml;solution injectable;ampoule de 1 ml;medicament;1;1;1;ambiant;;
+VP-ECH-0012;Artéméther + luméfantrine 20 mg/120 mg comprimé, boîte de 24;artéméther + luméfantrine;20 mg/120 mg;comprimé;boîte de 24;medicament;1;0;1;ambiant;;
+VP-ECH-0013;Artéméther + luméfantrine 20 mg/120 mg comprimé dispersible, boîte de 6;artéméther + luméfantrine;20 mg/120 mg;comprimé dispersible;boîte de 6;medicament;1;0;1;ambiant;;
+VP-ECH-0014;Artésunate 60 mg poudre pour solution injectable, flacon;artésunate;60 mg;poudre pour solution injectable;flacon;medicament;1;0;1;ambiant;;
+VP-ECH-0015;Artésunate + amodiaquine 100 mg/270 mg comprimé, boîte de 3;artésunate + amodiaquine;100 mg/270 mg;comprimé;boîte de 3;medicament;1;0;1;ambiant;;
+VP-ECH-0016;Dihydroartémisinine + pipéraquine 40 mg/320 mg comprimé, boîte de 9;dihydroartémisinine + pipéraquine;40 mg/320 mg;comprimé;boîte de 9;medicament;1;0;1;ambiant;;
+VP-ECH-0017;Quinine 300 mg comprimé, boîte de 20;quinine;300 mg;comprimé;boîte de 20;medicament;1;0;1;ambiant;;
+VP-ECH-0018;Sulfadoxine + pyriméthamine 500 mg/25 mg comprimé, boîte de 3;sulfadoxine + pyriméthamine;500 mg/25 mg;comprimé;boîte de 3;medicament;1;0;1;ambiant;;
+VP-ECH-0019;Amoxicilline 500 mg gélule, boîte de 12;amoxicilline;500 mg;gélule;boîte de 12;medicament;1;0;2;ambiant;;
+VP-ECH-0020;Amoxicilline 250 mg/5 ml poudre pour suspension buvable, flacon de 60 ml;amoxicilline;250 mg/5 ml;poudre pour suspension buvable;flacon de 60 ml;medicament;1;0;2;ambiant;;
+VP-ECH-0021;Amoxicilline + acide clavulanique 1 g/125 mg comprimé, boîte de 16;amoxicilline + acide clavulanique;1 g/125 mg;comprimé;boîte de 16;medicament;1;0;2;ambiant;;
+VP-ECH-0022;Amoxicilline + acide clavulanique 100 mg/12,5 mg/ml poudre pour suspension buvable, flacon de 60 ml;amoxicilline + acide clavulanique;100 mg/12,5 mg/ml;poudre pour suspension buvable;flacon de 60 ml;medicament;1;0;2;ambiant;;
+VP-ECH-0023;Ampicilline 1 g poudre pour solution injectable, flacon;ampicilline;1 g;poudre pour solution injectable;flacon;medicament;1;0;2;ambiant;;
+VP-ECH-0024;Benzathine benzylpénicilline 2,4 MUI poudre pour suspension injectable, flacon;benzathine benzylpénicilline;2,4 MUI;poudre pour suspension injectable;flacon;medicament;1;0;2;ambiant;;
+VP-ECH-0025;Ceftriaxone 1 g poudre pour solution injectable, flacon;ceftriaxone;1 g;poudre pour solution injectable;flacon;medicament;1;0;1;ambiant;;
+VP-ECH-0026;Céfixime 200 mg comprimé, boîte de 8;céfixime;200 mg;comprimé;boîte de 8;medicament;1;0;2;ambiant;;
+VP-ECH-0027;Ciprofloxacine 500 mg comprimé, boîte de 10;ciprofloxacine;500 mg;comprimé;boîte de 10;medicament;1;0;2;ambiant;;
+VP-ECH-0028;Azithromycine 500 mg comprimé, boîte de 3;azithromycine;500 mg;comprimé;boîte de 3;medicament;1;0;2;ambiant;;
+VP-ECH-0029;Azithromycine 200 mg/5 ml poudre pour suspension buvable, flacon de 15 ml;azithromycine;200 mg/5 ml;poudre pour suspension buvable;flacon de 15 ml;medicament;1;0;2;ambiant;;
+VP-ECH-0030;Cotrimoxazole 800 mg/160 mg comprimé, boîte de 20;cotrimoxazole;800 mg/160 mg;comprimé;boîte de 20;medicament;1;0;2;ambiant;;
+VP-ECH-0031;Doxycycline 100 mg comprimé, boîte de 10;doxycycline;100 mg;comprimé;boîte de 10;medicament;1;0;2;ambiant;;
+VP-ECH-0032;Métronidazole 500 mg comprimé, boîte de 20;métronidazole;500 mg;comprimé;boîte de 20;medicament;1;0;2;ambiant;;
+VP-ECH-0033;Métronidazole 5 mg/ml solution pour perfusion, flacon de 100 ml;métronidazole;5 mg/ml;solution pour perfusion;flacon de 100 ml;medicament;1;0;2;ambiant;;
+VP-ECH-0034;Gentamicine 80 mg/2 ml solution injectable, ampoule;gentamicine;80 mg/2 ml;solution injectable;ampoule;medicament;1;0;2;ambiant;;
+VP-ECH-0035;Érythromycine 500 mg comprimé, boîte de 20;érythromycine;500 mg;comprimé;boîte de 20;medicament;1;0;3;ambiant;;
+VP-ECH-0036;Nitrofurantoïne 100 mg gélule, boîte de 20;nitrofurantoïne;100 mg;gélule;boîte de 20;medicament;1;0;3;ambiant;;
+VP-ECH-0037;Fluconazole 150 mg gélule, boîte de 1;fluconazole;150 mg;gélule;boîte de 1;medicament;1;0;3;ambiant;;
+VP-ECH-0038;Clotrimazole 500 mg comprimé vaginal, boîte de 1;clotrimazole;500 mg;comprimé vaginal;boîte de 1;medicament;1;0;3;ambiant;;
+VP-ECH-0039;Miconazole 2 % crème, tube de 30 g;miconazole;2 %;crème;tube de 30 g;medicament;1;0;3;ambiant;;
+VP-ECH-0040;Griséofulvine 500 mg comprimé, boîte de 20;griséofulvine;500 mg;comprimé;boîte de 20;medicament;1;0;3;ambiant;;
+VP-ECH-0041;Albendazole 400 mg comprimé, boîte de 1;albendazole;400 mg;comprimé;boîte de 1;medicament;1;0;3;ambiant;;
+VP-ECH-0042;Mébendazole 100 mg comprimé, boîte de 6;mébendazole;100 mg;comprimé;boîte de 6;medicament;1;0;3;ambiant;;
+VP-ECH-0043;Praziquantel 600 mg comprimé, boîte de 4;praziquantel;600 mg;comprimé;boîte de 4;medicament;1;0;3;ambiant;;
+VP-ECH-0044;Ivermectine 3 mg comprimé, boîte de 4;ivermectine;3 mg;comprimé;boîte de 4;medicament;1;0;3;ambiant;;
+VP-ECH-0045;Rifampicine + isoniazide + pyrazinamide + éthambutol 150/75/400/275 mg comprimé, boîte de 28;rifampicine + isoniazide + pyrazinamide + éthambutol;150/75/400/275 mg;comprimé;boîte de 28;medicament;1;0;1;ambiant;;
+VP-ECH-0046;Ténofovir + lamivudine + dolutégravir 300/300/50 mg comprimé, flacon de 30;ténofovir + lamivudine + dolutégravir;300/300/50 mg;comprimé;flacon de 30;medicament;1;0;1;ambiant;;
+VP-ECH-0047;Abacavir + lamivudine 120/60 mg comprimé dispersible, flacon de 30;abacavir + lamivudine;120/60 mg;comprimé dispersible;flacon de 30;medicament;1;0;1;ambiant;;
+VP-ECH-0048;Aciclovir 200 mg comprimé, boîte de 25;aciclovir;200 mg;comprimé;boîte de 25;medicament;1;0;3;ambiant;;
+VP-ECH-0049;Insuline humaine rapide 100 UI/ml solution injectable, flacon de 10 ml;insuline humaine rapide;100 UI/ml;solution injectable;flacon de 10 ml;medicament;1;0;1;2-8C;;
+VP-ECH-0050;Insuline humaine isophane (NPH) 100 UI/ml suspension injectable, flacon de 10 ml;insuline humaine isophane (NPH);100 UI/ml;suspension injectable;flacon de 10 ml;medicament;1;0;1;2-8C;;
+VP-ECH-0051;Insuline glargine 100 UI/ml solution injectable en stylo, boîte de 5 stylos;insuline glargine;100 UI/ml;solution injectable en stylo;boîte de 5 stylos;medicament;1;0;1;2-8C;;
+VP-ECH-0052;Metformine 500 mg comprimé, boîte de 30;metformine;500 mg;comprimé;boîte de 30;medicament;1;0;2;ambiant;;
+VP-ECH-0053;Metformine 850 mg comprimé, boîte de 30;metformine;850 mg;comprimé;boîte de 30;medicament;1;0;2;ambiant;;
+VP-ECH-0054;Glibenclamide 5 mg comprimé, boîte de 30;glibenclamide;5 mg;comprimé;boîte de 30;medicament;1;0;2;ambiant;;
+VP-ECH-0055;Gliclazide 80 mg comprimé, boîte de 60;gliclazide;80 mg;comprimé;boîte de 60;medicament;1;0;2;ambiant;;
+VP-ECH-0056;Amlodipine 5 mg comprimé, boîte de 30;amlodipine;5 mg;comprimé;boîte de 30;medicament;1;0;2;ambiant;;
+VP-ECH-0057;Amlodipine 10 mg comprimé, boîte de 30;amlodipine;10 mg;comprimé;boîte de 30;medicament;1;0;2;ambiant;;
+VP-ECH-0058;Nifédipine 20 mg comprimé à libération prolongée, boîte de 30;nifédipine;20 mg;comprimé à libération prolongée;boîte de 30;medicament;1;0;2;ambiant;;
+VP-ECH-0059;Hydrochlorothiazide 25 mg comprimé, boîte de 30;hydrochlorothiazide;25 mg;comprimé;boîte de 30;medicament;1;0;2;ambiant;;
+VP-ECH-0060;Énalapril 10 mg comprimé, boîte de 30;énalapril;10 mg;comprimé;boîte de 30;medicament;1;0;2;ambiant;;
+VP-ECH-0061;Lisinopril 10 mg comprimé, boîte de 28;lisinopril;10 mg;comprimé;boîte de 28;medicament;1;0;2;ambiant;;
+VP-ECH-0062;Losartan 50 mg comprimé, boîte de 30;losartan;50 mg;comprimé;boîte de 30;medicament;1;0;2;ambiant;;
+VP-ECH-0063;Aténolol 50 mg comprimé, boîte de 30;aténolol;50 mg;comprimé;boîte de 30;medicament;1;0;2;ambiant;;
+VP-ECH-0064;Bisoprolol 5 mg comprimé, boîte de 30;bisoprolol;5 mg;comprimé;boîte de 30;medicament;1;0;2;ambiant;;
+VP-ECH-0065;Furosémide 40 mg comprimé, boîte de 20;furosémide;40 mg;comprimé;boîte de 20;medicament;1;0;2;ambiant;;
+VP-ECH-0066;Furosémide 20 mg/2 ml solution injectable, ampoule;furosémide;20 mg/2 ml;solution injectable;ampoule;medicament;1;0;1;ambiant;;
+VP-ECH-0067;Spironolactone 25 mg comprimé, boîte de 30;spironolactone;25 mg;comprimé;boîte de 30;medicament;1;0;2;ambiant;;
+VP-ECH-0068;Méthyldopa 250 mg comprimé, boîte de 30;méthyldopa;250 mg;comprimé;boîte de 30;medicament;1;0;1;ambiant;;
+VP-ECH-0069;Atorvastatine 20 mg comprimé, boîte de 30;atorvastatine;20 mg;comprimé;boîte de 30;medicament;1;0;3;ambiant;;
+VP-ECH-0070;Warfarine 5 mg comprimé, boîte de 30;warfarine;5 mg;comprimé;boîte de 30;medicament;1;0;1;ambiant;;
+VP-ECH-0071;Énoxaparine 4000 UI/0,4 ml solution injectable en seringue, boîte de 2;énoxaparine;4000 UI/0,4 ml;solution injectable en seringue;boîte de 2;medicament;1;0;1;ambiant;;
+VP-ECH-0072;Digoxine 0,25 mg comprimé, boîte de 30;digoxine;0,25 mg;comprimé;boîte de 30;medicament;1;0;1;ambiant;;
+VP-ECH-0073;Salbutamol 100 µg/dose suspension pour inhalation, flacon pressurisé de 200 doses;salbutamol;100 µg/dose;suspension pour inhalation;flacon pressurisé de 200 doses;medicament;1;0;1;ambiant;;
+VP-ECH-0074;Salbutamol 5 mg/ml solution pour nébulisation, flacon de 20 ml;salbutamol;5 mg/ml;solution pour nébulisation;flacon de 20 ml;medicament;1;0;1;ambiant;;
+VP-ECH-0075;Béclométasone 250 µg/dose suspension pour inhalation, flacon pressurisé de 200 doses;béclométasone;250 µg/dose;suspension pour inhalation;flacon pressurisé de 200 doses;medicament;1;0;2;ambiant;;
+VP-ECH-0076;Prednisolone 5 mg comprimé, boîte de 20;prednisolone;5 mg;comprimé;boîte de 20;medicament;1;0;2;ambiant;;
+VP-ECH-0077;Dexaméthasone 4 mg/ml solution injectable, ampoule;dexaméthasone;4 mg/ml;solution injectable;ampoule;medicament;1;0;1;ambiant;;
+VP-ECH-0078;Hydrocortisone 100 mg poudre pour solution injectable, flacon;hydrocortisone;100 mg;poudre pour solution injectable;flacon;medicament;1;0;1;ambiant;;
+VP-ECH-0079;Épinéphrine (adrénaline) 1 mg/ml solution injectable, ampoule;épinéphrine (adrénaline);1 mg/ml;solution injectable;ampoule;medicament;1;0;1;ambiant;;
+VP-ECH-0080;Chlorphénamine 4 mg comprimé, boîte de 20;chlorphénamine;4 mg;comprimé;boîte de 20;medicament;1;0;3;ambiant;;
+VP-ECH-0081;Loratadine 10 mg comprimé, boîte de 10;loratadine;10 mg;comprimé;boîte de 10;medicament;1;0;3;ambiant;;
+VP-ECH-0082;Cétirizine 10 mg comprimé, boîte de 10;cétirizine;10 mg;comprimé;boîte de 10;medicament;1;0;3;ambiant;;
+VP-ECH-0083;Oméprazole 20 mg gélule gastrorésistante, boîte de 14;oméprazole;20 mg;gélule gastrorésistante;boîte de 14;medicament;1;0;3;ambiant;;
+VP-ECH-0084;Ranitidine 150 mg comprimé, boîte de 20;ranitidine;150 mg;comprimé;boîte de 20;medicament;1;0;3;ambiant;;
+VP-ECH-0085;Métoclopramide 10 mg comprimé, boîte de 40;métoclopramide;10 mg;comprimé;boîte de 40;medicament;1;0;3;ambiant;;
+VP-ECH-0086;Ondansétron 4 mg comprimé, boîte de 4;ondansétron;4 mg;comprimé;boîte de 4;medicament;1;0;2;ambiant;;
+VP-ECH-0087;Hydroxyde d'aluminium + hydroxyde de magnésium 400/400 mg suspension buvable, flacon de 250 ml;hydroxyde d'aluminium + hydroxyde de magnésium;400/400 mg;suspension buvable;flacon de 250 ml;medicament;1;0;3;ambiant;;
+VP-ECH-0088;Lopéramide 2 mg gélule, boîte de 20;lopéramide;2 mg;gélule;boîte de 20;medicament;1;0;3;ambiant;;
+VP-ECH-0089;Sels de réhydratation orale 20,5 g poudre pour solution buvable, sachet;sels de réhydratation orale;20,5 g;poudre pour solution buvable;sachet;medicament;1;0;1;ambiant;;
+VP-ECH-0090;Zinc (sulfate) 20 mg comprimé dispersible, boîte de 10;zinc (sulfate);20 mg;comprimé dispersible;boîte de 10;medicament;1;0;1;ambiant;;
+VP-ECH-0091;Bisacodyl 5 mg comprimé, boîte de 30;bisacodyl;5 mg;comprimé;boîte de 30;medicament;1;0;3;ambiant;;
+VP-ECH-0092;Butylscopolamine 10 mg comprimé, boîte de 20;butylscopolamine;10 mg;comprimé;boîte de 20;medicament;1;0;3;ambiant;;
+VP-ECH-0093;Fer + acide folique 60 mg/0,4 mg comprimé, boîte de 30;fer + acide folique;60 mg/0,4 mg;comprimé;boîte de 30;medicament;1;0;2;ambiant;;
+VP-ECH-0094;Acide folique 5 mg comprimé, boîte de 30;acide folique;5 mg;comprimé;boîte de 30;medicament;1;0;2;ambiant;;
+VP-ECH-0095;Sulfate ferreux 200 mg comprimé, boîte de 30;sulfate ferreux;200 mg;comprimé;boîte de 30;medicament;1;0;2;ambiant;;
+VP-ECH-0096;Vitamine A (rétinol) 200 000 UI capsule, boîte de 1;vitamine A (rétinol);200 000 UI;capsule;boîte de 1;medicament;1;0;2;ambiant;;
+VP-ECH-0097;Multivitamines comprimé, boîte de 30;multivitamines;;comprimé;boîte de 30;medicament;1;0;3;ambiant;;
+VP-ECH-0098;Calcium + vitamine D3 500 mg/400 UI comprimé, boîte de 30;calcium + vitamine D3;500 mg/400 UI;comprimé;boîte de 30;medicament;1;0;3;ambiant;;
+VP-ECH-0099;Ocytocine 10 UI/ml solution injectable, ampoule;ocytocine;10 UI/ml;solution injectable;ampoule;medicament;1;0;1;2-8C;;
+VP-ECH-0100;Misoprostol 200 µg comprimé, boîte de 4;misoprostol;200 µg;comprimé;boîte de 4;medicament;1;0;1;ambiant;;
+VP-ECH-0101;Sulfate de magnésium 500 mg/ml solution injectable, ampoule de 10 ml;sulfate de magnésium;500 mg/ml;solution injectable;ampoule de 10 ml;medicament;1;0;1;ambiant;;
+VP-ECH-0102;Lévonorgestrel 1,5 mg comprimé, boîte de 1;lévonorgestrel;1,5 mg;comprimé;boîte de 1;medicament;1;0;2;ambiant;;
+VP-ECH-0103;Éthinylestradiol + lévonorgestrel 30 µg/150 µg comprimé, plaquette de 28;éthinylestradiol + lévonorgestrel;30 µg/150 µg;comprimé;plaquette de 28;medicament;1;0;2;ambiant;;
+VP-ECH-0104;Médroxyprogestérone 150 mg/ml suspension injectable, flacon;médroxyprogestérone;150 mg/ml;suspension injectable;flacon;medicament;1;0;2;ambiant;;
+VP-ECH-0105;Phénobarbital 100 mg comprimé, boîte de 20;phénobarbital;100 mg;comprimé;boîte de 20;medicament;1;1;1;ambiant;;
+VP-ECH-0106;Carbamazépine 200 mg comprimé, boîte de 50;carbamazépine;200 mg;comprimé;boîte de 50;medicament;1;0;1;ambiant;;
+VP-ECH-0107;Valproate de sodium 500 mg comprimé gastrorésistant, boîte de 40;valproate de sodium;500 mg;comprimé gastrorésistant;boîte de 40;medicament;1;0;1;ambiant;;
+VP-ECH-0108;Diazépam 5 mg comprimé, boîte de 30;diazépam;5 mg;comprimé;boîte de 30;medicament;1;1;2;ambiant;;
+VP-ECH-0109;Diazépam 10 mg/2 ml solution injectable, ampoule;diazépam;10 mg/2 ml;solution injectable;ampoule;medicament;1;1;1;ambiant;;
+VP-ECH-0110;Halopéridol 5 mg comprimé, boîte de 30;halopéridol;5 mg;comprimé;boîte de 30;medicament;1;1;2;ambiant;;
+VP-ECH-0111;Amitriptyline 25 mg comprimé, boîte de 50;amitriptyline;25 mg;comprimé;boîte de 50;medicament;1;0;2;ambiant;;
+VP-ECH-0112;Fluoxétine 20 mg gélule, boîte de 14;fluoxétine;20 mg;gélule;boîte de 14;medicament;1;0;2;ambiant;;
+VP-ECH-0113;Lidocaïne 2 % solution injectable, flacon de 20 ml;lidocaïne;2 %;solution injectable;flacon de 20 ml;medicament;1;0;2;ambiant;;
+VP-ECH-0114;Kétamine 50 mg/ml solution injectable, flacon de 10 ml;kétamine;50 mg/ml;solution injectable;flacon de 10 ml;medicament;1;1;1;ambiant;;
+VP-ECH-0115;Chlorure de sodium 0,9 % solution pour perfusion, poche de 500 ml;chlorure de sodium;0,9 %;solution pour perfusion;poche de 500 ml;medicament;1;0;1;ambiant;;
+VP-ECH-0116;Ringer lactate solution pour perfusion, poche de 500 ml;Ringer lactate;;solution pour perfusion;poche de 500 ml;medicament;1;0;1;ambiant;;
+VP-ECH-0117;Glucose 5 % solution pour perfusion, poche de 500 ml;glucose;5 %;solution pour perfusion;poche de 500 ml;medicament;1;0;1;ambiant;;
+VP-ECH-0118;Glucose 50 % solution injectable, flacon de 50 ml;glucose;50 %;solution injectable;flacon de 50 ml;medicament;1;0;1;ambiant;;
+VP-ECH-0119;Eau pour préparations injectables solvant, ampoule de 10 ml;eau pour préparations injectables;;solvant;ampoule de 10 ml;medicament;1;0;2;ambiant;;
+VP-ECH-0120;Sérum antitétanique 1500 UI solution injectable, ampoule;sérum antitétanique;1500 UI;solution injectable;ampoule;medicament;1;0;1;2-8C;;
+VP-ECH-0121;Vaccin antitétanique suspension injectable, flacon multidose;vaccin antitétanique;;suspension injectable;flacon multidose;medicament;1;0;1;2-8C;;
+VP-ECH-0122;Povidone iodée 10 % solution pour application cutanée, flacon de 125 ml;povidone iodée;10 %;solution pour application cutanée;flacon de 125 ml;medicament;1;0;3;ambiant;;
+VP-ECH-0123;Chlorhexidine 0,05 % solution pour application cutanée, flacon de 250 ml;chlorhexidine;0,05 %;solution pour application cutanée;flacon de 250 ml;medicament;1;0;3;ambiant;;
+VP-ECH-0124;Tétracycline 1 % pommade ophtalmique, tube de 5 g;tétracycline;1 %;pommade ophtalmique;tube de 5 g;medicament;1;0;2;ambiant;;
+VP-ECH-0125;Hydrocortisone 1 % crème, tube de 15 g;hydrocortisone;1 %;crème;tube de 15 g;medicament;1;0;3;ambiant;;
+VP-ECH-0126;Perméthrine 5 % crème, tube de 30 g;perméthrine;5 %;crème;tube de 30 g;medicament;1;0;3;ambiant;;
+VP-ECH-0127;Oxyde de zinc 10 % pommade, tube de 50 g;oxyde de zinc;10 %;pommade;tube de 50 g;medicament;1;0;3;ambiant;;
+VP-ECH-0128;Glucomètre, unité;;;appareil;unité;dispositif;0;0;2;ambiant;;
+VP-ECH-0129;Bandelettes de glycémie, boîte de 50;;;bandelette;boîte de 50;dispositif;0;0;1;ambiant;;
+VP-ECH-0130;Lancettes stériles, boîte de 100;;;lancette;boîte de 100;dispositif;0;0;2;ambiant;;
+VP-ECH-0131;Tensiomètre électronique au bras, unité;;;appareil;unité;dispositif;0;0;2;ambiant;;
+VP-ECH-0132;Oxymètre de pouls, unité;;;appareil;unité;dispositif;0;0;2;ambiant;;
+VP-ECH-0133;Thermomètre électronique, unité;;;appareil;unité;dispositif;0;0;3;ambiant;;
+VP-ECH-0134;Seringue stérile 5 ml, boîte de 100;;;seringue;boîte de 100;dispositif;0;0;2;ambiant;;
+VP-ECH-0135;Seringue à insuline 1 ml, boîte de 100;;;seringue;boîte de 100;dispositif;0;0;1;ambiant;;
+VP-ECH-0136;Cathéter intraveineux 20G, boîte de 50;;;cathéter;boîte de 50;dispositif;0;0;1;ambiant;;
+VP-ECH-0137;Perfuseur (set de perfusion), unité;;;dispositif;unité;dispositif;0;0;1;ambiant;;
+VP-ECH-0138;Compresses stériles 10x10, boîte de 50;;;compresse;boîte de 50;dispositif;0;0;3;ambiant;;
+VP-ECH-0139;Bande de crêpe 10 cm, unité;;;bande;unité;dispositif;0;0;3;ambiant;;
+VP-ECH-0140;Sparadrap 2,5 cm, unité;;;rouleau;unité;dispositif;0;0;3;ambiant;;
+VP-ECH-0141;Gants d'examen nitrile M, boîte de 100;;;gant;boîte de 100;dispositif;0;0;2;ambiant;;
+VP-ECH-0142;Test de diagnostic rapide paludisme, boîte de 25;;;test;boîte de 25;dispositif;0;0;1;ambiant;;
+VP-ECH-0143;Test de grossesse urinaire, unité;;;test;unité;dispositif;0;0;3;ambiant;;
+VP-ECH-0144;Masque chirurgical, boîte de 50;;;masque;boîte de 50;dispositif;0;0;3;ambiant;;
+VP-ECH-0145;Chambre d'inhalation adulte, unité;;;dispositif;unité;dispositif;0;0;2;ambiant;;
+VP-ECH-0146;Poche de stomie, boîte de 30;;;poche;boîte de 30;dispositif;0;0;1;ambiant;;
+VP-ECH-0147;Sonde urinaire Foley 16 Ch, unité;;;sonde;unité;dispositif;0;0;1;ambiant;;
+```

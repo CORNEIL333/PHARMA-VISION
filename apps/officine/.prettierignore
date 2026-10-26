@@ -1,0 +1,6 @@
+dist/
+node_modules/
+data-local/
+*.md
+*.sql
+server/src/security/common-passwords.txt
