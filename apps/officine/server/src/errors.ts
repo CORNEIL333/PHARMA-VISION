@@ -30,7 +30,12 @@ export type ErrorCode =
   | 'internal_error'
   | 'barcode_taken'
   | 'invalid_barcode'
-  | 'payload_too_large';
+  | 'payload_too_large'
+  | 'stale_prescription'
+  | 'price_missing'
+  | 'backup_invalid'
+  | 'cloud_unreachable'
+  | 'cloud_rejected';
 
 const STATUS: Record<ErrorCode, number> = {
   validation_failed: 400,
@@ -61,6 +66,11 @@ const STATUS: Record<ErrorCode, number> = {
   barcode_taken: 409,
   invalid_barcode: 422,
   payload_too_large: 413,
+  stale_prescription: 409,
+  price_missing: 409,
+  backup_invalid: 422,
+  cloud_unreachable: 503,
+  cloud_rejected: 502,
 };
 
 export class AppError extends Error {

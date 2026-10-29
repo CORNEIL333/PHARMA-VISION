@@ -1,0 +1,74 @@
+@import 'tailwindcss';
+@import '@fontsource-variable/inter';
+@import './tokens.css';
+@import 'sonner/dist/styles.css';
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme inline {
+  --font-sans: 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
+  --color-bg: var(--vp-bg);
+  --color-surface: var(--vp-surface);
+  --color-surface-2: var(--vp-surface-2);
+  --color-border: var(--vp-border);
+  --color-fg: var(--vp-fg);
+  --color-muted: var(--vp-muted);
+  --color-accent: var(--vp-accent);
+  --color-accent-fg: var(--vp-accent-fg);
+  --color-danger: var(--vp-danger);
+  --color-danger-bg: var(--vp-danger-bg);
+  --color-warning: var(--vp-warning);
+  --color-warning-bg: var(--vp-warning-bg);
+  --color-success: var(--vp-success);
+  --color-success-bg: var(--vp-success-bg);
+  --color-ring: var(--vp-ring);
+  --radius-vp: var(--vp-radius);
+  --text-xs: 12px;
+  --text-sm: 14px;
+  --text-base: 16px;
+  --text-lg: 20px;
+  --text-xl: 28px;
+  --text-total: 56px;
+}
+
+@layer base {
+  html, body, #root { height: 100%; }
+  body {
+    @apply bg-bg text-fg font-sans text-sm antialiased;
+    font-feature-settings: 'cv11', 'ss01';
+  }
+  :focus-visible { outline: 2px solid var(--vp-accent); outline-offset: 2px; }
+  ::selection { background: var(--vp-ring); }
+}
+
+.tabular { font-variant-numeric: tabular-nums; }
+.vp-anim { transition: opacity 160ms ease, transform 160ms ease, background-color 160ms ease, border-color 160ms ease; }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition-duration: 0ms !important; animation-duration: 0ms !important; }
+}
+
+/* V-06 : impression du ticket par le système (secours sans application de bureau). */
+#print-area { display: none; }
+@media print {
+  @page { size: 80mm auto; margin: 2mm; }
+  body * { visibility: hidden; }
+  #print-area, #print-area * { visibility: visible; }
+  #print-area { display: block; position: absolute; left: 0; top: 0; width: 76mm; margin: 0;
+    font: 11px/1.25 ui-monospace, monospace; white-space: pre; color: #000; background: #fff; }
+}
+
+/* Impression d'un rapport ou d'une clôture : seul le contenu de l'écran est imprimé. */
+@media print {
+  body.vp-print-page * { visibility: visible; }
+  body.vp-print-page nav, body.vp-print-page .print\:hidden, body.vp-print-page [data-sonner-toaster] { display: none !important; }
+  body.vp-print-page #print-area { display: none; }
+  body.vp-print-page { background: #fff; color: #000; }
+}
+
+/* C-07 : impression des étiquettes seules. */
+@media print {
+  body.vp-print-labels * { visibility: hidden; }
+  body.vp-print-labels .vp-labels, body.vp-print-labels .vp-labels * { visibility: visible; }
+  body.vp-print-labels .vp-labels { position: absolute; left: 0; top: 0; }
+  body.vp-print-labels .vp-label { color: #000; border-color: #000; break-inside: avoid; }
+}

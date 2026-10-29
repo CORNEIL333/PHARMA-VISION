@@ -1,0 +1,23 @@
+# Démarrage :
+#   docker compose -f deploy/docker-compose.yml build
+#   docker compose -f deploy/docker-compose.yml run --rm officine node dist/scripts/init.js --data /data --name officine.local --ip 192.168.1.10
+#   docker compose -f deploy/docker-compose.yml up -d
+services:
+  officine:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
+    image: visionpharma/officine:0.1.0
+    restart: always
+    ports:
+      - "8443:8443"
+    env_file: .env
+    volumes:
+      - officine-data:/data
+    read_only: true
+    tmpfs:
+      - /tmp
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+volumes:
+  officine-data:

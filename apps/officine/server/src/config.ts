@@ -1,3 +1,4 @@
+import { existsSync } from 'node:fs';
 import path from 'node:path';
 
 /**
@@ -40,7 +41,12 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
     port: int(env.VP_PORT, 8443, 1, 65535),
     requireTls: bool(env.VP_REQUIRE_TLS, true),
     logLevel: level,
-    webDist: env.VP_WEB_DIST ? path.resolve(env.VP_WEB_DIST) : null,
+    // Interface web : VP_WEB_DIST, sinon le build du dépôt (web/dist) s'il existe.
+    webDist: env.VP_WEB_DIST
+      ? path.resolve(env.VP_WEB_DIST)
+      : existsSync(path.resolve('web/dist/index.html'))
+        ? path.resolve('web/dist')
+        : null,
     // Valeurs de la spécification (A-05, A-07, J-03) : non configurables à la baisse en production.
     sessionIdleMinutes: 30,
     sessionMaxHours: 12,

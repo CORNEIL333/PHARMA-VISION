@@ -1,4 +1,5 @@
 import type { FastifyInstance, FastifyRequest } from 'fastify';
+import { writeTx } from '../db/index.js';
 import { AppError } from '../errors.js';
 import { safeEqual } from '../security/crypto.js';
 import { grant, MATRIX, type Action } from '../security/rbac.js';
@@ -6,6 +7,7 @@ import { RateLimiter } from '../security/ratelimit.js';
 import { lookupSession, reauthValid } from '../security/sessions.js';
 import type { Services } from '../services.js';
 import { isSetupDone } from '../domain/setup.js';
+import { enforceDevicePolicy } from '../security/device-policy.js';
 import type { RouteInfo, RoutePermission } from './types.js';
 
 export const SESSION_COOKIE = 'vp_sid';
@@ -29,6 +31,7 @@ export function registerHooks(app: FastifyInstance, s: Services): void {
   let setupDone = isSetupDone(s);
 
   app.decorateRequest('auth', null);
+  app.decorateRequest('deviceId', null);
   const table: RouteInfo[] = [];
   app.decorate('routeTable', table);
 
@@ -42,6 +45,11 @@ export function registerHooks(app: FastifyInstance, s: Services): void {
     }
     for (const m of [route.method].flat())
       if (m !== 'HEAD') table.push({ method: m, url: route.url, permission: perm as RoutePermission });
+  });
+
+  // W-11 : politique des postes sur TOUTES les requêtes (API, fichiers statiques, 404), avant le routage.
+  app.addHook('onRequest', async (req) => {
+    req.deviceId = enforceDevicePolicy(s, { method: req.method, url: req.url, headers: { 'x-vp-device': req.headers['x-vp-device'] }, deviceCookie: req.cookies?.vp_dev });
   });
 
   app.addHook('onSend', async (req, reply) => {
@@ -79,7 +87,15 @@ export function registerHooks(app: FastifyInstance, s: Services): void {
     }
     if (cfg.permission === 'session') return;
     const g = grant(a.role, cfg.permission as Action);
-    if (g === '-') throw new AppError('forbidden', 'Action non autorisée pour votre rôle');
+    if (g === '-') {
+      // RC-18 : toute tentative refusée d'un utilisateur connecté est tracée dans le journal (J-06).
+      writeTx(s.db, () =>
+        s.ledger.append('security.access_denied', a.userId, {
+          user_id: a.userId, role: a.role, action: cfg.permission as string, method: req.method, route: req.routeOptions.url ?? '',
+        }),
+      );
+      throw new AppError('forbidden', 'Action non autorisée pour votre rôle');
+    }
     if (g === 'R' && !reauthValid(s, a)) throw new AppError('reauth_required', 'Ré-authentification requise');
   });
 }

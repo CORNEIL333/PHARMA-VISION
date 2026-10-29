@@ -1,0 +1,16 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "local-screens",
+  "description": "Écrans embarqués (contenu local seulement) : appairage, serveur non reconnu, imprimante, mise à jour. Aucune origine distante.",
+  "windows": ["main", "printer", "update"],
+  "permissions": [
+    "allow-probe-server",
+    "allow-pair-device",
+    "allow-retry-connection",
+    "allow-get-printer",
+    "allow-set-printer",
+    "allow-test-printer",
+    "allow-pending-update",
+    "allow-install-update"
+  ]
+}

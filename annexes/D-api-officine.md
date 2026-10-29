@@ -145,6 +145,15 @@ Format RFC 9457 (`application/problem+json`) :
 | `GET /recalls` · `POST /recalls` · `POST /recalls/:id/close` | Créer un rappel (R) | Rappels |
 | `POST /recalls/import` | Créer un rappel (R) | Import d'un fichier de rappels |
 
+### Dossier de l'officine (docs/11)
+
+| Méthode et chemin | Permission | Rôle |
+|---|---|---|
+| `GET /profile/status` | toute session | Avancement du dossier, sans données |
+| `GET /profile` · `PUT /profile/:section` | Paramètres (R) | Rubriques : identite, autorisation, titulaire, localisation, contacts, fiscal, horaires, personnel, donnees |
+| `GET /payers` | Vendre | Organismes de tiers payant actifs |
+| `POST /payers` · `PUT /payers/:id` | Paramètres (R) | Organismes de tiers payant |
+
 ### Demande, garde, rapports
 
 | Méthode et chemin | Permission | Rôle |

@@ -1,0 +1,33 @@
+{
+  "name": "@visionpharma/cloud",
+  "version": "0.1.0",
+  "private": true,
+  "description": "VisionPharma — serveur central (cloud L1) : enrôlement, synchronisation, référentiel, rappels, disponibilité, journal de transparence",
+  "type": "module",
+  "engines": {
+    "node": ">=22.12"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "lint": "eslint .",
+    "test": "vitest run",
+    "tl-verify": "tsx scripts/tl-verify.ts"
+  },
+  "dependencies": {
+    "@sinclair/typebox": "0.34.52",
+    "@visionpharma/protocol": "file:../../packages/protocol",
+    "fastify": "5.12.7",
+    "jose": "6.2.13",
+    "pg": "8.23.1"
+  },
+  "devDependencies": {
+    "@eslint/js": "10.0.1",
+    "@types/node": "24.19.2",
+    "@types/pg": "8.23.1",
+    "eslint": "10.13.0",
+    "tsx": "4.23.15",
+    "typescript": "5.9.3",
+    "typescript-eslint": "8.72.1",
+    "vitest": "5.0.5"
+  }
+}

@@ -1,0 +1,32 @@
+/* Écrans embarqués : mêmes jetons que l'interface (sombre par défaut, une seule couleur d'accent). */
+:root {
+  --bg: oklch(0.17 0.006 260); --surface: oklch(0.205 0.007 260); --border: oklch(0.32 0.008 260);
+  --fg: oklch(0.96 0.003 260); --muted: oklch(0.74 0.01 260); --accent: oklch(0.72 0.13 185);
+  --accent-fg: oklch(0.18 0.03 185); --danger: oklch(0.70 0.19 25); --danger-bg: oklch(0.30 0.08 25);
+  --success: oklch(0.78 0.15 150); color-scheme: dark;
+}
+@media (prefers-color-scheme: light) {
+  :root {
+    --bg: oklch(0.985 0.002 260); --surface: #fff; --border: oklch(0.88 0.005 260); --fg: oklch(0.2 0.01 260);
+    --muted: oklch(0.45 0.012 260); --accent: oklch(0.47 0.11 185); --accent-fg: #fff; --danger: oklch(0.5 0.19 25);
+    --danger-bg: oklch(0.95 0.03 25); --success: oklch(0.47 0.12 150); color-scheme: light;
+  }
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; background: var(--bg); color: var(--fg); font: 14px/1.5 system-ui, 'Segoe UI', sans-serif; }
+main { max-width: 520px; margin: 0 auto; padding: 48px 24px; display: flex; flex-direction: column; gap: 16px; }
+h1 { font-size: 20px; margin: 0; }
+p { margin: 0; color: var(--muted); }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 20px; display: flex; flex-direction: column; gap: 12px; }
+label { display: flex; flex-direction: column; gap: 6px; font-size: 12px; color: var(--muted); }
+input { height: 38px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg); color: var(--fg); padding: 0 12px; font-size: 15px; }
+input:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+button { height: 38px; border: 0; border-radius: 8px; background: var(--accent); color: var(--accent-fg); font-weight: 600; font-size: 14px; cursor: pointer; }
+button.secondary { background: transparent; color: var(--fg); border: 1px solid var(--border); }
+button:disabled { opacity: .5; cursor: default; }
+.fingerprint { font-family: ui-monospace, monospace; font-size: 15px; word-break: break-all; color: var(--fg); background: var(--bg); padding: 12px; border-radius: 8px; border: 1px solid var(--border); }
+.code { font-family: ui-monospace, monospace; letter-spacing: .3em; font-size: 22px; text-align: center; }
+.error { color: var(--danger); background: var(--danger-bg); border-radius: 8px; padding: 8px 12px; }
+.ok { color: var(--success); }
+.blocking { border-color: var(--danger); }
+[hidden] { display: none !important; }

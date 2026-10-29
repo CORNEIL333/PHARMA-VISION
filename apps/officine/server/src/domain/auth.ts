@@ -4,6 +4,7 @@ import { AppError } from '../errors.js';
 import { randomToken } from '../security/crypto.js';
 import { burnPasswordTime, verifyPassword } from '../security/passwords.js';
 import { createSession, type AuthContext } from '../security/sessions.js';
+import { grant } from '../security/rbac.js';
 import { newTotpSecret, otpauthUri, verifyTotp } from '../security/totp.js';
 import type { Services } from '../services.js';
 import { decryptTotpSecret, encryptTotpSecret, findByUsername, getUser, type UserRow } from './users.js';
@@ -161,6 +162,36 @@ export class AuthService {
         .run(iso(this.s.clock.now()), a.tokenHash);
       this.s.ledger.append('security.reauth', u.id, { user_id: u.id, purpose: purpose ?? null });
     });
+  }
+
+  /**
+   * O-02 : un pharmacien (ou le titulaire) valide sur le poste d'un autre utilisateur avec ses propres
+   * identifiants (mot de passe, plus TOTP si activé). Mêmes règles d'échec et de verrouillage qu'une connexion.
+   */
+  async verifyValidator(username: string, password: string, code: string | undefined, meta: LoginMeta): Promise<string> {
+    const u = findByUsername(this.s, username);
+    if (!u || !u.active || this.isLocked(u) || grant(u.role, 'prescription.validate') === '-') {
+      await burnPasswordTime(password);
+      this.recordFailure(undefined, username, meta, 'bad_countersign');
+      throw GENERIC();
+    }
+    let ok = await verifyPassword(password, u.pw_hash);
+    let counter: number | null = null;
+    if (ok && u.totp_enabled) {
+      counter = u.totp_secret_enc
+        ? verifyTotp(decryptTotpSecret(this.s, u.id, u.totp_secret_enc), code ?? '', this.s.clock.now(), u.totp_last_counter)
+        : null;
+      ok = counter !== null;
+    }
+    if (!ok) {
+      this.recordFailure(u, u.username, meta, 'bad_countersign');
+      throw GENERIC();
+    }
+    writeTx(this.s.db, () => {
+      if (counter !== null) this.s.db.prepare('UPDATE users SET totp_last_counter = ? WHERE id = ?').run(counter, u.id);
+      this.s.ledger.append('security.reauth', u.id, { user_id: u.id, purpose: 'prescription_countersign' });
+    });
+    return u.id;
   }
 
   /** Début d'enrôlement TOTP : secret chiffré stocké, inactif jusqu'à confirmation. */

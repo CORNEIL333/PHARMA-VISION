@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Appairage du poste — VisionPharma</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <main>
+      <h1>Appairer ce poste</h1>
+      <p>Ce poste se connecte au serveur de l'officine. L'appairage se fait une seule fois, avec un pharmacien ou le titulaire.</p>
+      <div id="revoked" class="error" role="alert" hidden>Ce poste a été révoqué par le titulaire. Appairez-le de nouveau.</div>
+
+      <form id="step1" class="card" autocomplete="off">
+        <label>Adresse du serveur (nom ou IP, avec le port si besoin)
+          <input id="address" required placeholder="officine.local:8443" autofocus />
+        </label>
+        <button type="submit">Vérifier le serveur</button>
+      </form>
+
+      <form id="step2" class="card" autocomplete="off" hidden>
+        <p>Empreinte de l'autorité du serveur <strong id="origin"></strong> :</p>
+        <div id="fingerprint" class="fingerprint" data-testid="fingerprint"></div>
+        <p>Comparez-la caractère par caractère avec celle affichée dans l'écran <strong>Système</strong> du serveur. Si elle diffère, n'allez pas plus loin.</p>
+        <label>Nom de ce poste
+          <input id="name" required maxlength="80" placeholder="Comptoir 1" />
+        </label>
+        <label>Code d'appairage (8 chiffres, écran Système → Postes)
+          <input id="code" class="code" required inputmode="numeric" pattern="[0-9]{8}" maxlength="8" />
+        </label>
+        <button type="submit">Appairer</button>
+        <button type="button" class="secondary" id="back">Changer d'adresse</button>
+      </form>
+
+      <div id="error" class="error" role="alert" hidden></div>
+      <p id="done" class="ok" role="status" hidden>Poste appairé. Ouverture de l'interface…</p>
+    </main>
+    <script src="pairing.js"></script>
+  </body>
+</html>

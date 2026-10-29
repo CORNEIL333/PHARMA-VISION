@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Serveur non reconnu — VisionPharma</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <main>
+      <div class="card blocking" role="alert">
+        <h1>Serveur non reconnu</h1>
+        <p>Le serveur qui répond n'est pas celui avec lequel ce poste a été appairé, ou il est injoignable. Par sécurité, l'interface ne s'ouvre pas.</p>
+        <p>Vérifiez que le serveur de l'officine est allumé et branché au réseau. Si le serveur a été remplacé, le titulaire doit appairer ce poste de nouveau.</p>
+        <p id="reason" class="fingerprint"></p>
+        <button id="retry" type="button" autofocus>Réessayer</button>
+      </div>
+    </main>
+    <script src="unrecognized.js"></script>
+  </body>
+</html>

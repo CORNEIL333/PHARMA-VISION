@@ -11,7 +11,11 @@ export function resolveTls(config: Config): { key: Buffer; cert: Buffer } | null
       `TLS obligatoire : ${p.tlsCert} introuvable. Lancer l'initialisation, ou poser VP_REQUIRE_TLS=false en développement.`,
     );
   }
-  return { key: readFileSync(p.tlsKey), cert: readFileSync(p.tlsCert) };
+  // Chaîne complète (certificat du serveur + autorité locale) : l'application de bureau extrait l'autorité
+  // de la poignée de main pour l'afficher à l'appairage (W-02) puis l'épingle (W-03).
+  const leaf = readFileSync(p.tlsCert);
+  const chain = existsSync(p.caCert) ? Buffer.concat([leaf, Buffer.from('\n'), readFileSync(p.caCert)]) : leaf;
+  return { key: readFileSync(p.tlsKey), cert: chain };
 }
 
 // Suites AEAD uniquement pour TLS 1.2 ; TLS 1.3 n'a que des suites AEAD.

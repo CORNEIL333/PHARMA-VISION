@@ -1,0 +1,38 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "VisionPharma Officine",
+  "version": "0.1.0",
+  "identifier": "cm.visionpharma.officine",
+  "build": {
+    "frontendDist": "../pairing"
+  },
+  "app": {
+    "withGlobalTauri": false,
+    "windows": [],
+    "security": {
+      "csp": "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; connect-src ipc: http://ipc.localhost; frame-ancestors 'none'; object-src 'none'; base-uri 'none'",
+      "capabilities": ["local-screens"],
+      "freezePrototype": true
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": ["nsis", "msi", "deb"],
+    "createUpdaterArtifacts": true,
+    "category": "Business",
+    "shortDescription": "Poste de travail VisionPharma Officine",
+    "icon": ["icons/32x32.png", "icons/128x128.png", "icons/128x128@2x.png", "icons/icon.ico"],
+    "windows": {
+      "webviewInstallMode": { "type": "embedBootstrapper" },
+      "nsis": { "installMode": "currentUser", "languages": ["French"] }
+    },
+    "linux": { "deb": { "depends": [] } }
+  },
+  "plugins": {
+    "updater": {
+      "pubkey": "REMPLACE_EN_CI_PAR_LA_CLE_PUBLIQUE_DE_MISE_A_JOUR",
+      "endpoints": [],
+      "windows": { "installMode": "passive" }
+    }
+  }
+}

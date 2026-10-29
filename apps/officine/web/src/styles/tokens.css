@@ -1,0 +1,45 @@
+/*
+ * Jetons de design (spec §8.1). Sombre par défaut, clair disponible. Une seule couleur d'accent.
+ * Couleurs d'état réservées au sens : rouge = bloquant, orange = avertissement, vert = succès.
+ * Aucun écran ne code une couleur en dur : tout passe par ces variables (via Tailwind, app.css).
+ */
+:root,
+:root.dark {
+  --vp-bg: oklch(0.17 0.006 260);
+  --vp-surface: oklch(0.205 0.007 260);
+  --vp-surface-2: oklch(0.245 0.008 260);
+  --vp-border: oklch(0.32 0.008 260);
+  --vp-fg: oklch(0.96 0.003 260);
+  --vp-muted: oklch(0.74 0.01 260);
+  --vp-accent: oklch(0.72 0.13 185);
+  --vp-accent-fg: oklch(0.18 0.03 185);
+  --vp-danger: oklch(0.70 0.19 25);
+  --vp-danger-bg: oklch(0.30 0.08 25);
+  --vp-warning: oklch(0.82 0.15 75);
+  --vp-warning-bg: oklch(0.32 0.07 75);
+  --vp-success: oklch(0.78 0.15 150);
+  --vp-success-bg: oklch(0.30 0.06 150);
+  --vp-ring: oklch(0.72 0.13 185 / 0.6);
+  --vp-radius: 8px;
+  --vp-row: 36px;
+  color-scheme: dark;
+}
+
+:root.light {
+  --vp-bg: oklch(0.985 0.002 260);
+  --vp-surface: oklch(1 0 0);
+  --vp-surface-2: oklch(0.965 0.003 260);
+  --vp-border: oklch(0.88 0.005 260);
+  --vp-fg: oklch(0.2 0.01 260);
+  --vp-muted: oklch(0.45 0.012 260);
+  --vp-accent: oklch(0.42 0.1 185);
+  --vp-accent-fg: oklch(0.99 0 0);
+  --vp-danger: oklch(0.5 0.19 25);
+  --vp-danger-bg: oklch(0.95 0.03 25);
+  --vp-warning: oklch(0.5 0.12 65);
+  --vp-warning-bg: oklch(0.96 0.04 80);
+  --vp-success: oklch(0.47 0.12 150);
+  --vp-success-bg: oklch(0.95 0.04 150);
+  --vp-ring: oklch(0.42 0.1 185 / 0.5);
+  color-scheme: light;
+}

@@ -40,7 +40,7 @@ I-04 et C-01 à C-06 sont faits. 43 tests ajoutés (209 au total, 11 fichiers) :
 |---|---|---|---|---|---|
 | I-01 | M | done | init.test.ts « I-01 … » | | Autorité locale ECDSA P-256 + certificat serveur générés avec node:crypto seul (security/x509.ts), validés par openssl et une poignée de main TLS. |
 | I-02 | M | done | auth.http.test.ts « I-02 … » | | API faite (POST /setup, GET /setup/status, GET /setup/totp-secret). Écran : UI-01. |
-| I-03 | M | doing | init.test.ts « I-03 … », auth.http.test.ts « I-03 … » | | Clé générée, affichée une fois, enveloppe recovery.wrap, confirmation exigée à la configuration. Reste : critère B-04 (restauration sur machine neuve). |
+| I-03 | M | done | init.test.ts, auth.http.test.ts, backup.test.ts « B-04 … » | | Critère B-04 couvert (restauration sur machine neuve). |
 | I-04 | M | done | catalog.import.test.ts « I-04 … », catalog.http.test.ts « I-04 … » | | `domain/catalogImport.ts` : CSV `;` UTF-8 (BOM toléré), validation ligne par ligne, réimport par `ref_code` qui ne touche ni stock, ni prix local, ni seuils ; une seule transaction, rapport capé à 1 000 erreurs + `catalog.imports` + `catalog.imported` (SHA-256). CLI `npm run import-catalog`. 50 000 lignes : test « 50 000 lignes importées en moins de 60 secondes ». |
 | I-05 | M | done | startup.test.ts « I-05 … » | | server/src/tls.ts ; suites AEAD seulement en TLS 1.2 ; TLS 1.1 refusé (vérifié à la main). |
 | I-06 | M | done | init.test.ts « I-06 … », auth.http.test.ts « I-06 … » | | Empreinte publique dans GET /setup/status et GET /system/info. Affichage : UI-02 et UI-14. |
@@ -61,121 +61,200 @@ I-04 et C-01 à C-06 sont faits. 43 tests ajoutés (209 au total, 11 fichiers) :
 | C-04 | M | done | gs1.test.ts « C-04 … » | | `domain/gs1.ts` : AI 01/10/17/21, avec ou sans FNC1/GS, préfixe de symbologie `]xx` toléré, clé de contrôle mod-10 (GTIN 8/12/13/14), `00` = dernier jour du mois. |
 | C-05 | M | done | catalog.domain.test.ts « C-05 … » | | `last_activity_at` (migration 003) ; `sweepSleepingProducts` endort après 12 mois sans s'appuyer sur les fiches dormantes, horloge injectée. Tâche quotidienne `jobs/catalog.ts` à minuit heure de Douala. |
 | C-06 | M | done | catalog.http.test.ts « C-06 … » | | `PATCH /products/:id/price` sous `price.edit` (titulaire, pharmacien), `suggested_price` toujours visible, `catalog.price_changed` par changement, aucun événement si le prix est identique. |
-| C-07 | S | todo |  | |  |
-| S-01 | M | todo |  | |  |
-| S-02 | M | todo |  | |  |
-| S-03 | M | todo |  | |  |
-| S-04 | M | todo |  | |  |
-| S-05 | M | todo |  | |  |
-| S-06 | M | todo |  | |  |
-| S-07 | M | todo |  | |  |
-| S-08 | M | todo |  | |  |
-| S-09 | S | todo |  | |  |
-| R-01 | M | todo |  | |  |
-| R-02 | M | todo |  | |  |
-| R-03 | M | todo |  | |  |
-| R-04 | M | todo |  | |  |
-| R-05 | M | todo |  | |  |
-| R-06 | S | todo |  | |  |
-| V-01 | M | todo |  | |  |
-| V-02 | M | todo |  | |  |
-| V-03 | M | todo |  | |  |
-| V-04 | M | todo |  | |  |
-| V-05 | M | todo |  | |  |
-| V-06 | M | todo |  | |  |
-| V-07 | M | todo |  | |  |
-| V-08 | M | todo |  | |  |
-| V-09 | M | todo |  | |  |
-| V-10 | M | todo |  | |  |
-| O-01 | M | todo |  | |  |
-| O-02 | M | todo |  | |  |
-| O-03 | M | todo |  | |  |
-| O-04 | M | todo |  | |  |
-| O-05 | M | todo |  | |  |
-| O-06 | M | todo |  | |  |
-| Q-01 | M | todo |  | |  |
-| Q-02 | M | todo |  | |  |
-| Q-03 | M | todo |  | |  |
-| Q-04 | M | todo |  | |  |
-| Q-05 | S | todo |  | |  |
-| D-01 | M | todo |  | |  |
-| D-02 | M | todo |  | |  |
-| D-03 | M | todo |  | |  |
-| P-01 | M | todo |  | |  |
-| P-02 | M | todo |  | |  |
-| P-03 | M | todo |  | |  |
-| P-04 | M | todo |  | |  |
-| P-05 | M | todo |  | |  |
-| P-06 | M | todo |  | |  |
-| P-07 | M | todo |  | |  |
-| P-08 | S | todo |  | |  |
+| C-07 | S | done | labels.test.ts « C-07 … », e2e « UI-06 … » | | Code interne EAN-13 (préfixe 20) + étiquettes 50 × 30 mm imprimables (QUESTIONS Q-19). Vérification manuelle à l’imprimante d’étiquettes. |
+| S-01 | M | done | stock.test.ts, invariants.property.test.ts « S-01 … » | | `domain/stock.ts` : mouvements préparés puis écrits par `appendStockEvent` avec l'événement (payload.movements), contrôle de non-négativité par lot dans la transaction. |
+| S-02 | M | done | stock.test.ts « S-02 … » | | FEFO : péremption, date d'entrée, identifiant ; lots rappelés, périmés (marge VP_EXPIRY_BLOCK_DAYS, minuit de Douala) et vides exclus. |
+| S-03 | M | done | stock.test.ts « S-03 … » | |  |
+| S-04 | M | done | stock.test.ts « S-04 … » (deux processus, deux connexions SQLite) | |  |
+| S-05 | M | done | stock.test.ts, stock.http.test.ts « S-05 … » | | Motifs casse, vol, erreur_saisie, don, autre (texte obligatoire) ; R. |
+| S-06 | M | done | inventory.test.ts « S-06 … » | | Migration 004 : `inventory_scope`, `movement_mark` (recomptage exigé si le lot a bougé). Lot découvert à l'inventaire = activation C-02. |
+| S-07 | M | done | stock.test.ts « S-07 … » | | Seulement lots périmés ou rappelés, motif + PV. |
+| S-08 | M | done | stock.test.ts « S-08 … » | | Coût inconnu explicite (`total_value_xaf: null`), jamais zéro. |
+| S-09 | S | done | stock.test.ts, stock.http.test.ts « S-09 … » | | `PATCH /products/:id/thresholds` sous `price.edit`. |
+| R-01 | M | done | orders.test.ts « R-01 … » | | Routes montées dans app.ts. |
+| R-02 | M | done | orders.test.ts « R-02 … » | |  |
+| R-03 | M | done | orders.test.ts « R-03 … » | | Export PDF (A4, 80 mm) et texte WhatsApp. |
+| R-04 | M | done | receptions.test.ts « R-04 … » | | `domain/receptions.ts`, migration 005 (`receptions`). Bon partiel puis reçu. |
+| R-05 | M | done | receptions.test.ts « R-05 … » | | Moins de 90 jours : `validation_failed` + `reason: near_expiry_confirmation_required`, puis `confirm_near_expiry`. |
+| R-06 | S | done | receptions.test.ts « R-06 … » | |  |
+| V-01 | M | done | sales.test.ts « V-01 … » | | `domain/cash.ts`. |
+| V-02 | M | done | sales.test.ts (devis), e2e caisse | | `POST /sales/quote` : contrôle du panier sans écriture. |
+| V-03 | M | done | sales.test.ts « V-03 … » | | Rendu : `cash_tendered` / `change_given` (migration 006). |
+| V-04 | M | done | sales.test.ts « V-04 … » | | Injection d'erreur (déclencheur SQL et journal). |
+| V-05 | M | done | sales.test.ts « V-05 … » | | Paramètre `allow_regul_sales` (absent = 30 jours après le premier événement). |
+| V-06 | M | done | sales.test.ts « V-06 … » | | `domain/receipt.ts` : 48 colonnes, empreinte courte de l'événement. |
+| V-07 | M | done | sales.test.ts « V-07 … » | | Jour civil de Douala. |
+| V-08 | M | done | sales.test.ts « V-08 … » | | Point de contrôle dans la transaction de clôture. |
+| V-09 | M | done | sales.test.ts « V-09 … » | | Plafond `discount_max_pct` (10 % par défaut). |
+| V-10 | M | done | sales.test.ts « V-10 … », stock.http.test.ts | |  |
+| O-01 | M | done | safety.test.ts « O-01 … » | |  |
+| O-02 | M | done | safety.test.ts « O-02 … » | | Contre-signature sur le poste du caissier : `POST /prescriptions/countersigned` (identifiants du pharmacien, TOTP si actif). |
+| O-03 | M | done | safety.test.ts « O-03 … » | |  |
+| O-04 | M | done | safety.test.ts « O-04 … » | | Fichier `blobs/rx-<id>.vpb`, clé HKDF « vp-blob-v1 », AAD = identifiant. |
+| O-05 | M | done | safety.test.ts « O-05 … » | | Code `stale_prescription` (409). |
+| O-06 | M | done | safety.test.ts « O-06 … », reports.test.ts « P-06 … » | |  |
+| Q-01 | M | done | safety.test.ts « Q-01 … » | |  |
+| Q-02 | M | done | safety.test.ts « Q-02 … » | | Lot scanné (`lot_id`) : 409 `recalled_lot` avec le motif. |
+| Q-03 | M | done | safety.test.ts « Q-03 … » | |  |
+| Q-04 | M | done | safety.test.ts « Q-04 … » | |  |
+| Q-05 | S | done | safety.test.ts « Q-05 … » | | Import CSV tout ou rien. |
+| D-01 | M | done | receptions.test.ts « D-01 … » | |  |
+| D-02 | M | done | receptions.test.ts « D-02 … » | |  |
+| D-03 | M | done | receptions.test.ts « D-03 … » | |  |
+| P-01 | M | done | reports.test.ts « P-01 … » | |  |
+| P-02 | M | done | reports.test.ts « P-02 … » | |  |
+| P-03 | M | done | reports.test.ts « P-03 … » | |  |
+| P-04 | M | done | reports.test.ts « P-04 … » | |  |
+| P-05 | M | done | reports.test.ts « P-05 … » | |  |
+| P-06 | M | done | reports.test.ts « P-06 … » | |  |
+| P-07 | M | done | reports.test.ts « P-07 … » | |  |
+| P-08 | S | done | reports.test.ts « P-08 … » | | Lecture : titulaire ré-authentifié (`settings.edit`). |
 | J-01 | M | done | ledger.test.ts « J-01 … » | |  |
 | J-02 | M | done | ledger.vectors.test.ts | | Vecteurs de l’annexe C reproduits octet pour octet. |
 | J-03 | M | done | ledger.test.ts « J-03 … », startup.test.ts « J-03 … » | | Tous les 100 événements, à la demande, à minuit (jobs/checkpoints.ts), à l’arrêt. Clôture de caisse : appeler ledger.checkpoint() dans V-07. |
-| J-04 | M | doing | ledger.test.ts « J-04 … » | | Faits : continuité, empreintes, chaîne, signatures, projection de stock par lot (convention payload.movements). Reste : étape 5 (totaux de caisse) avec le module V, et l’écran Système UI-14. |
-| J-05 | M | todo |  | |  |
-| J-06 | M | done | auth.http.test.ts « J-06 … » | | Connexion, échec, verrouillage, ré-authentification, comptes. Restauration : à faire avec B-04. |
-| B-01 | M | todo |  | |  |
-| B-02 | M | todo |  | |  |
-| B-03 | M | todo |  | |  |
-| B-04 | M | todo |  | |  |
-| B-05 | M | todo |  | |  |
-| G-01 | S | todo |  | |  |
-| W-01 | M | todo |  | |  |
-| W-02 | M | todo |  | |  |
-| W-03 | M | todo |  | |  |
-| W-04 | M | todo |  | |  |
-| W-05 | M | todo |  | |  |
-| W-06 | M | todo |  | |  |
-| W-07 | M | todo |  | |  |
-| W-08 | M | todo |  | |  |
-| W-09 | S | todo |  | |  |
-| W-10 | S | todo |  | |  |
-| W-11 | S | todo |  | |  |
-| UI-01 | M | todo | | | Configuration initiale |
-| UI-02 | M | todo | | | Connexion |
-| UI-03 | M | todo | | | Caisse |
-| UI-04 | M | todo | | | Paiement |
-| UI-05 | M | todo | | | Ordonnance |
-| UI-06 | M | todo | | | Produits et stock |
-| UI-07 | M | todo | | | Réception |
-| UI-08 | M | todo | | | Commandes |
-| UI-09 | M | todo | | | Inventaire |
-| UI-10 | M | todo | | | Rappels |
-| UI-11 | M | todo | | | Demandes non satisfaites |
-| UI-12 | M | todo | | | Rapports |
-| UI-13 | M | todo | | | Comptes |
-| UI-14 | M | todo | | | Système |
-| UI-15 | M | todo | | | Clôture de caisse |
-| UI-16 | M | todo | | | Pages d'erreur et états globaux |
-| DW-01 | M | todo | | | Écran d'appairage |
-| DW-02 | M | todo | | | Serveur non reconnu |
-| DW-03 | M | todo | | | Poste révoqué |
-| DW-04 | M | todo | | | Fenêtre principale |
-| DW-05 | M | todo | | | Fenêtre de mise à jour |
-| DW-06 | M | todo | | | Réglage de l'imprimante |
-| RC-01 | M | todo | | | Scénario de recette (docs/08) |
-| RC-02 | M | todo | | | Scénario de recette (docs/08) |
-| RC-03 | M | todo | | | Scénario de recette (docs/08) |
-| RC-04 | M | todo | | | Scénario de recette (docs/08) |
-| RC-05 | M | todo | | | Scénario de recette (docs/08) |
-| RC-06 | M | todo | | | Scénario de recette (docs/08) |
-| RC-07 | M | todo | | | Scénario de recette (docs/08) |
-| RC-08 | M | todo | | | Scénario de recette (docs/08) |
-| RC-09 | M | todo | | | Scénario de recette (docs/08) |
-| RC-10 | M | todo | | | Scénario de recette (docs/08) |
-| RC-11 | M | todo | | | Scénario de recette (docs/08) |
-| RC-12 | M | todo | | | Scénario de recette (docs/08) |
-| RC-13 | M | todo | | | Scénario de recette (docs/08) |
-| RC-14 | M | todo | | | Scénario de recette (docs/08) |
-| RC-15 | M | todo | | | Scénario de recette (docs/08) |
-| RC-16 | M | todo | | | Scénario de recette (docs/08) |
-| RC-17 | M | todo | | | Scénario de recette (docs/08) |
-| RC-18 | M | todo | | | Scénario de recette (docs/08) |
-| RC-19 | M | todo | | | Scénario de recette (docs/08) |
-| RC-20 | M | todo | | | Scénario de recette (docs/08) |
-| RC-21 | M | todo | | | Scénario de recette (docs/08) |
-| RC-22 | M | todo | | | Scénario de recette (docs/08) |
-| RC-23 | M | todo | | | Scénario de recette (docs/08) |
-| RC-24 | M | todo | | | Scénario de recette (docs/08) |
-| RC-25 | M | todo | | | Scénario de recette (docs/08) |
+| J-04 | M | done | ledger.test.ts, e2e « UI-14 J-04 … » | | Écran Système : vérification du journal. |
+| J-05 | M | done | backup.test.ts « J-05 … » | | `domain/ledgerExport.ts` : JSON Lines CloudEvents + point de contrôle ; `verifyExport`. |
+| J-06 | M | done | auth.http.test.ts, backup.test.ts « B-04 J-06 … » | | `system.restored` dans la chaîne. |
+| B-01 | M | done | backup.test.ts « B-01 … » | | `domain/backup.ts`, format VPBAK1 (doc 06 §4.3), `domain/tar.ts`. |
+| B-02 | M | done | backup.test.ts « B-02 … » | | `jobs/backup.ts` ; miroir absent = `mirror: absent` dans l'événement, pas d'arrêt. |
+| B-03 | M | done | backup.test.ts « B-03 … » | |  |
+| B-04 | M | done | backup.test.ts « B-04 … » | | Mise en attente vérifiée, remplacement au redémarrage (`applyPendingRestore` dans main.ts), clé de récupération sur machine neuve. |
+| B-05 | M | done | backup.test.ts « B-05 … » | |  |
+| G-01 | S | done | duty.test.ts, sales.test.ts « V-08 G-01 … » | | Caisse « garde » séparée (migration 006 `cash_sessions.kind`). |
+| W-01 | M | waiting-human |  | | Installateurs signés : certificat de signature de code et clé de mise à jour (CI). Installer l’autorité locale dans le magasin de confiance des postes. |
+| W-02 | M | done | devices.test.ts « W-02 … » | | Serveur : code d’appairage, secret de poste (empreinte seule en base). Application : voir DW-01. |
+| W-03 | M | done | desktop/src-tauri, server/test/desktop.test.ts | | Épinglage rustls ; npm run desktop:pinning-test (vrai serveur, autre autorité refusée). |
+| W-04 | M | done | desktop/src-tauri, server/test/desktop.test.ts | | on_navigation + on_new_window Deny ; test w04. |
+| W-05 | M | done | desktop/src-tauri, server/test/desktop.test.ts | | 3 commandes, capacité distante à l’exécution ; tests w05. |
+| W-06 | M | done | desktop/src-tauri, server/test/desktop.test.ts | | escpos.rs (tests w06) ; imprimante réseau TCP. Manuel sur l’imprimante de référence. |
+| W-07 | M | done | server/test/desktop.test.ts « W-07 … » | | Serveur : manifeste et paquets ; npm run publish-desktop. Clé de signature à générer en CI. |
+| W-08 | M | done | desktop/src-tauri, server/test/desktop.test.ts | | single-instance, window-state, kiosque par poste (desktop.test.ts). |
+| W-09 | S | done | devices.test.ts « W-09 … » | | Écran : UI-14. |
+| W-10 | S | waiting-human |  | | Effets de fenêtre natifs : vérification manuelle. |
+| W-11 | S | done | devices.test.ts « W-11 … » | | Politique en `onRequest` (hooks.ts). |
+| UI-01 | M | done | web/e2e/app.spec.ts (axe + captures docs/screenshots/) | | Écran construit, testé de bout en bout contre le vrai serveur. |
+| UI-02 | M | done | web/e2e/app.spec.ts (axe + captures docs/screenshots/) | | Écran construit, testé de bout en bout contre le vrai serveur. |
+| UI-03 | M | done | web/e2e/app.spec.ts (axe + captures docs/screenshots/) | | Écran construit, testé de bout en bout contre le vrai serveur. |
+| UI-04 | M | done | web/e2e/app.spec.ts (axe + captures docs/screenshots/) | | Écran construit, testé de bout en bout contre le vrai serveur. |
+| UI-05 | M | done | web/e2e/app.spec.ts (axe + captures docs/screenshots/) | | Écran construit, testé de bout en bout contre le vrai serveur. |
+| UI-06 | M | done | web/e2e/app.spec.ts (axe + captures docs/screenshots/) | | Écran construit, testé de bout en bout contre le vrai serveur. |
+| UI-07 | M | done | web/e2e/app.spec.ts (axe + captures docs/screenshots/) | | Écran construit, testé de bout en bout contre le vrai serveur. |
+| UI-08 | M | done | web/e2e/app.spec.ts (axe + captures docs/screenshots/) | | Écran construit, testé de bout en bout contre le vrai serveur. |
+| UI-09 | M | done | web/e2e/app.spec.ts (axe + captures docs/screenshots/) | | Écran construit, testé de bout en bout contre le vrai serveur. |
+| UI-10 | M | done | web/e2e/app.spec.ts (axe + captures docs/screenshots/) | | Écran construit, testé de bout en bout contre le vrai serveur. |
+| UI-11 | M | done | web/e2e/app.spec.ts (axe + captures docs/screenshots/) | | Écran construit, testé de bout en bout contre le vrai serveur. |
+| UI-12 | M | done | web/e2e/app.spec.ts (axe + captures docs/screenshots/) | | Écran construit, testé de bout en bout contre le vrai serveur. |
+| UI-13 | M | done | web/e2e/app.spec.ts (axe + captures docs/screenshots/) | | Écran construit, testé de bout en bout contre le vrai serveur. |
+| UI-14 | M | done | web/e2e/app.spec.ts (axe + captures docs/screenshots/) | | Écran construit, testé de bout en bout contre le vrai serveur. |
+| UI-15 | M | done | web/e2e/app.spec.ts (axe + captures docs/screenshots/) | | Écran construit, testé de bout en bout contre le vrai serveur. |
+| UI-16 | M | done | web/e2e/app.spec.ts (axe + captures docs/screenshots/) | | Écran construit, testé de bout en bout contre le vrai serveur. |
+| DW-01 | M | done | desktop/src-tauri (cargo test) | | pairing/index.html |
+| DW-02 | M | done | desktop/src-tauri (cargo test) | | pairing/unrecognized.html, test Rust w03 contre un vrai serveur |
+| DW-03 | M | done | desktop/src-tauri (cargo test) | | index.html?revoked=1, contrôle périodique |
+| DW-04 | M | done | desktop/src-tauri (cargo test) | | lib.rs, test w04 |
+| DW-05 | M | done | desktop/src-tauri (cargo test) | | pairing/update.html |
+| DW-06 | M | done | desktop/src-tauri (cargo test) | | pairing/printer.html |
+| RC-01 | M | waiting-human | docs/manual-tests.md §2 | | Installation chronométrée sur le mini-PC réel |
+| RC-02 | M | done | docs/manual-tests.md §1 | | Automatisé. |
+| RC-03 | M | done | docs/manual-tests.md §1 | | Automatisé. |
+| RC-04 | M | done | docs/manual-tests.md §1 | | Automatisé. |
+| RC-05 | M | done | docs/manual-tests.md §1 | | Automatisé. |
+| RC-06 | M | done | docs/manual-tests.md §1 | | Automatisé. |
+| RC-07 | M | done | docs/manual-tests.md §1 | | Automatisé. |
+| RC-08 | M | done | docs/manual-tests.md §1 | | Automatisé. |
+| RC-09 | M | done | docs/manual-tests.md §1 | | Automatisé. |
+| RC-10 | M | done | docs/manual-tests.md §1 | | Automatisé. |
+| RC-11 | M | done | docs/manual-tests.md §1 | | Automatisé. |
+| RC-12 | M | done | docs/manual-tests.md §1 | | Automatisé. |
+| RC-13 | M | done | docs/manual-tests.md §1 | | Automatisé. |
+| RC-14 | M | done | docs/manual-tests.md §1 | | Automatisé. |
+| RC-15 | M | done | docs/manual-tests.md §1 | | Automatisé. |
+| RC-16 | M | done | docs/manual-tests.md §1 et §2 | | Automatisé ; procédure manuelle complémentaire. |
+| RC-17 | M | done | docs/manual-tests.md §1 | | Automatisé. |
+| RC-18 | M | done | docs/manual-tests.md §1 | | Automatisé. |
+| RC-19 | M | done | docs/manual-tests.md §1 | | Automatisé. |
+| RC-20 | M | waiting-human | docs/manual-tests.md §2 | | deploy/update.sh ; à jouer sur Ubuntu |
+| RC-21 | M | waiting-human | docs/manual-tests.md §2 | | Installateur signé et autorité installée sur le poste |
+| RC-22 | M | done | docs/manual-tests.md §1 et §2 | | Automatisé ; procédure manuelle complémentaire. |
+| RC-23 | M | waiting-human | docs/manual-tests.md §2 | | Clé de mise à jour en CI |
+| RC-24 | M | waiting-human | docs/manual-tests.md §2 | | Imprimante de référence |
+| RC-25 | M | done | docs/manual-tests.md §1 | | Automatisé. |
+
+## Dossier d'installation de l'officine (28 octobre 2026, demande du porteur du projet)
+
+| ID | Prio | Statut | Test | Commit | Notes |
+|---|---|---|---|---|---|
+| DOS-01 | S | done | profile.test.ts, e2e « Dossier de l'officine » | | Recherche et conception : docs/11-dossier-installation.md. Écran `/dossier`, bandeau d'avancement, tiers payant, grossistes, NIU et RCCM sur le ticket. |
+| DOS-02 | S | waiting-human | | | Validation du contenu par l'ONPC, la DPML et un conseil fiscal (points « à confirmer » de docs/11). |
+| DOS-03 | C | todo | | | TVA de la parapharmacie sur le ticket et dans les rapports (docs/11 §5) : décision fiscale préalable. |
+
+## Phase B — serveur central et back-office (docs/10-cloud-spec.md)
+
+| ID | Prio | Statut | Test | Commit | Notes |
+|---|---|---|---|---|---|
+| CL-01 | M | todo | | |  |
+| CL-02 | M | todo | | |  |
+| CL-03 | M | todo | | |  |
+| CL-04 | M | todo | | |  |
+| CL-05 | M | todo | | |  |
+| CL-06 | S | todo | | | Non construit en phase B (spec §2.1). |
+| SY-01 | M | todo | | |  |
+| SY-02 | M | doing | apps/cloud/test/domain.test.ts | | Protocole et décision de lot faits (apps/cloud/src/domain/batch.ts). Reste : passerelle et persistance PostgreSQL. |
+| SY-03 | M | doing | apps/cloud/test/domain.test.ts | | Décision idempotente faite. Reste : persistance. |
+| SY-04 | M | doing | apps/cloud/test/domain.test.ts | | Décision de quarantaine faite. Reste : persistance, alerte. |
+| SY-05 | M | todo | | |  |
+| SY-06 | M | todo | | |  |
+| SY-07 | M | todo | | |  |
+| RF-01 | M | todo | | |  |
+| RF-02 | M | todo | | |  |
+| RF-03 | M | todo | | |  |
+| RF-04 | M | todo | | |  |
+| RA-01 | M | todo | | |  |
+| RA-02 | M | todo | | |  |
+| RA-03 | M | todo | | |  |
+| RA-04 | S | todo | | |  |
+| DI-01 | M | doing | apps/cloud/test/domain.test.ts | | Calcul des mouvements par lot fait. Reste : vue PostgreSQL. |
+| DI-02 | M | doing | apps/cloud/test/domain.test.ts | | Bornes de fraîcheur faites et testées. Reste : API. |
+| DI-03 | M | todo | | |  |
+| TL-01 | M | doing | packages/protocol/test/protocol.test.ts | | Arbre RFC 9162 fait dans packages/protocol (vecteurs CT). Reste : stockage cloud. |
+| TL-02 | M | doing | apps/cloud/test/domain.test.ts | | Têtes signées faites. Reste : émission périodique et stockage. |
+| TL-03 | M | doing | packages/protocol/test/protocol.test.ts | | Preuves d’inclusion et de cohérence faites et vérifiées exhaustivement (packages/protocol). Reste : routes cloud. |
+| TL-04 | M | done | apps/cloud/test/domain.test.ts « TL-04 … » | | Vérificateur indépendant : npm run tl-verify (code 0 ou 2). |
+| TL-05 | S | todo | | |  |
+| CR-01 | S | doing | apps/cloud/test/domain.test.ts | | Score fait (QUESTIONS Q-23). Reste : compteurs PostgreSQL. |
+| CR-02 | S | doing | apps/cloud/test/domain.test.ts | | Délais par niveau faits. Reste : diffusion. |
+| BO-01 | M | doing | apps/cloud/test/domain.test.ts | | Vérification des jetons (jose, MFA) faite. Reste : Keycloak réel (Docker). |
+| BO-02 | M | doing | apps/cloud/test/domain.test.ts | | Matrice faite. Reste : routes. |
+| BO-03 | M | todo | | |  |
+| BO-04 | M | todo | | |  |
+| OP-01 | M | todo | | |  |
+| OP-02 | M | todo | | |  |
+| OP-03 | M | todo | | |  |
+| OP-04 | M | todo | | |  |
+| OP-05 | M | todo | | |  |
+| OP-06 | M | todo | | |  |
+| NO-01 | M | done | officine server/test/cloud-sync.test.ts (faux cloud de test), e2e UI-14 | | Paramètres cloud_* (désactivé par défaut), enrôlement par jeton. |
+| NO-02 | M | done | officine server/test/cloud-sync.test.ts (faux cloud de test), e2e UI-14 | | Transport épinglé (clé SPKI vérifiée avant tout octet HTTP), requêtes signées, lots gzip, reprise avec attente plafonnée. |
+| NO-03 | M | done | officine server/test/cloud-sync.test.ts (faux cloud de test), e2e UI-14 | | Rappels signés appliqués par un compte système inactif, accusés. |
+| NO-04 | M | done | officine server/test/cloud-sync.test.ts (faux cloud de test), e2e UI-14 | | Versions signées appliquées dans l’ordre, prix local, seuils et statut conservés. |
+| NO-05 | M | done | officine server/test/cloud-sync.test.ts (faux cloud de test), e2e UI-14 | | Onglet Système → Synchronisation. |
+| BUI-01 | M | todo | | | |
+| BUI-02 | M | todo | | | |
+| BUI-03 | M | todo | | | |
+| BUI-04 | M | todo | | | |
+| BUI-05 | M | todo | | | |
+| BUI-06 | M | todo | | | |
+| BUI-07 | M | todo | | | |
+| BUI-08 | M | todo | | | |
+| BUI-09 | M | todo | | | |
+| BUI-10 | M | todo | | | |
+| RB-01 | M | todo | | | |
+| RB-02 | M | todo | | | |
+| RB-03 | M | todo | | | |
+| RB-04 | M | todo | | | |
+| RB-05 | M | todo | | | |
+| RB-06 | M | todo | | | |
+| RB-07 | M | todo | | | |
+| RB-08 | M | todo | | | |
+| RB-09 | M | todo | | | |
+| RB-10 | M | todo | | | |

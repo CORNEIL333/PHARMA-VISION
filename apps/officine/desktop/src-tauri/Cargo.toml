@@ -1,0 +1,34 @@
+[package]
+name = "visionpharma-desktop"
+version = "0.1.0"
+description = "VisionPharma Officine — application de bureau des postes (Tauri 2)"
+edition = "2021"
+rust-version = "1.80"
+publish = false
+
+[lib]
+name = "vp_desktop_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+# Dépendances autorisées (AGENTS.md, spec §2) : tauri 2, plugins updater, single-instance, window-state,
+# rustls. serde et serde_json sont imposés par l'API des commandes Tauri (QUESTIONS Q-25).
+# Pas de crate ESC/POS : les octets sont générés ici (src/escpos.rs), sans dépendance.
+# Plugins shell, fs et http INTERDITS (GUARDRAILS 16) ; le test tests::w05 l'échoue s'ils apparaissent.
+[dependencies]
+tauri = { version = "2", features = [] }
+tauri-plugin-updater = "2"
+tauri-plugin-single-instance = "2"
+tauri-plugin-window-state = "2"
+rustls = { version = "0.23", default-features = false, features = ["ring", "std", "tls12"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+
+[profile.release]
+codegen-units = 1
+lto = true
+opt-level = "s"
+panic = "abort"
+strip = true

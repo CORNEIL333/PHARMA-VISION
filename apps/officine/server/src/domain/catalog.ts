@@ -276,3 +276,35 @@ export function sweepSleepingProducts(s: Services, months = 12): { slept: string
     return { slept: rows.map((r) => r.id) };
   });
 }
+
+/** Plage GS1 réservée à la circulation interne (préfixe 20) : EAN-13 imprimable sur étiquette (C-07). */
+export const INTERNAL_PREFIX = '20';
+
+export function ean13CheckDigit(base12: string): string {
+  const sum = [...base12].reduce((n, d, i) => n + Number(d) * (i % 2 ? 3 : 1), 0);
+  return String((10 - (sum % 10)) % 10);
+}
+
+/**
+ * C-07 : code interne pour un produit sans code-barres. Numéro tiré d'un compteur transactionnel,
+ * associé comme code `interne` (catalog.barcode_linked) ; un produit qui en a déjà un le garde.
+ */
+export function assignInternalBarcode(s: Services, actor: string, productId: string): { ean13: string; created: boolean } {
+  return writeTx(s.db, () => {
+    getProduct(s, productId);
+    const existing = s.db.prepare("SELECT code FROM barcodes WHERE product_id = ? AND kind = 'interne' ORDER BY code LIMIT 1").get(productId) as
+      { code: string } | undefined;
+    if (existing) return { ean13: existing.code.replace(/^0/, ''), created: false };
+    for (;;) {
+      const n = (s.db.prepare(`INSERT INTO counters (name, value) VALUES ('internal_barcode', 1)
+        ON CONFLICT(name) DO UPDATE SET value = value + 1 RETURNING value`).get() as { value: number }).value;
+      const base = INTERNAL_PREFIX + String(n).padStart(10, '0');
+      const ean13 = base + ean13CheckDigit(base);
+      const code = parseBarcode(ean13).code;
+      if (s.db.prepare('SELECT 1 FROM barcodes WHERE code = ?').get(code)) continue;
+      s.db.prepare("INSERT INTO barcodes (code, product_id, kind) VALUES (?, ?, 'interne')").run(code, productId);
+      s.ledger.append('catalog.barcode_linked', actor, { product_id: productId, code, kind: 'interne' });
+      return { ean13, created: true };
+    }
+  });
+}

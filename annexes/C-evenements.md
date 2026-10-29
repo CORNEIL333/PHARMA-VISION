@@ -33,11 +33,14 @@ Dans la base du nœud, un événement est une ligne de `events` (document 06, se
 | `system.initialized` | Premier démarrage | `node_id`, `schema`, `pharmacy_name` |
 | `system.key_rotated` | Rotation de la clé du nœud | ancien et nouveau `kid`, clés publiques, double signature |
 | `system.settings_changed` | Paramètre modifié | clé, ancienne et nouvelle valeur |
+| `system.profile_updated` | Rubrique du dossier de l'officine enregistrée | rubrique, noms des champs modifiés, SHA-256 du contenu (jamais les valeurs) |
+| `payer.created` / `payer.updated` | Organisme de tiers payant | `payer_id`, nom, type, actif |
 | `system.backup_created` | Sauvegarde | fichier, taille, `last_seq`, empreinte de l'archive |
 | `system.restored` | Restauration | archive, `last_seq` restauré |
 | `system.support_access` | Ouverture ou fermeture de l'accès de support | durée, motif |
 | `security.login_succeeded` / `security.login_failed` | Connexion | utilisateur (ou identifiant tenté), adresse IP |
 | `security.account_locked` | Verrouillage | utilisateur, durée |
+| `security.access_denied` | Action refusée par la matrice des droits (RC-18) | utilisateur, rôle, action, méthode, route (jamais le corps) |
 | `security.reauth` | Ré-authentification | utilisateur, action visée |
 | `user.created` / `user.updated` / `user.disabled` / `user.enabled` / `user.password_reset` / `user.sessions_revoked` | Gestion des comptes | utilisateur cible, champs modifiés (jamais le mot de passe) |
 | `catalog.imported` | Import du catalogue | `import_id`, `filename`, lignes totales, insérées, mises à jour, rejetées, colonnes inconnues, `truncated`, empreinte SHA-256 du fichier |

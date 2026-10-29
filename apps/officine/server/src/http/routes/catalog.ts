@@ -1,6 +1,7 @@
 import type { FastifyInstance, FastifyRequest } from 'fastify';
 import { Type } from '@sinclair/typebox';
 import {
+  assignInternalBarcode,
   changeSalePrice,
   createLocalItem,
   linkBarcode,
@@ -182,6 +183,16 @@ export function catalogRoutes(app: FastifyInstance, s: Services): void {
       const body = req.body as LocalItemInput;
       return reply.status(201).send(createLocalItem(s, actor(req), body));
     },
+  );
+
+  // C-07 : code interne (EAN-13, préfixe 20) pour imprimer une étiquette.
+  app.post(
+    '/api/v1/products/:id/internal-barcode',
+    {
+      config: { permission: 'catalog.link' },
+      schema: { params: IdParams, response: { 200: Type.Object({ ean13: Type.String(), created: Type.Boolean() }) } },
+    },
+    async (req) => assignInternalBarcode(s, actor(req), (req.params as { id: string }).id),
   );
 
   app.post(

@@ -3,6 +3,8 @@ import { Type } from '@sinclair/typebox';
 import { schemaVersion, writeTx } from '../../db/index.js';
 import { AppError } from '../../errors.js';
 import { completeSetup, isSetupDone } from '../../domain/setup.js';
+import { isOnDuty } from '../../domain/duty.js';
+import { lastBackup } from '../../domain/backup.js';
 import { verifyLedger } from '../../domain/verify.js';
 import { newTotpSecret, otpauthUri } from '../../security/totp.js';
 import type { Services } from '../../services.js';
@@ -26,12 +28,14 @@ export function systemRoutes(app: FastifyInstance, s: Services): void {
             last_seq: Type.Integer(),
             last_checkpoint_age_s: Type.Union([Type.Integer(), Type.Null()]),
             last_backup_age_s: Type.Union([Type.Integer(), Type.Null()]),
+            on_duty: Type.Boolean(),
           }),
         },
       },
     },
     async () => {
       const cp = s.ledger.lastCheckpoint();
+      const bk = lastBackup(s);
       const now = s.clock.now().getTime();
       return {
         status: 'ok' as const,
@@ -40,7 +44,8 @@ export function systemRoutes(app: FastifyInstance, s: Services): void {
         setup_done: isSetupDone(s),
         last_seq: s.ledger.head().seq,
         last_checkpoint_age_s: cp ? Math.floor((now - Date.parse(cp.at)) / 1000) : null,
-        last_backup_age_s: null, // B-01 : renseigné quand la sauvegarde sera construite (J9)
+        last_backup_age_s: bk ? Math.floor((now - Date.parse(bk.at)) / 1000) : null,
+        on_duty: isOnDuty(s),
       };
     },
   );

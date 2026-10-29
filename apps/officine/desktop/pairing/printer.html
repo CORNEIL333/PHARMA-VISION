@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Imprimante du poste — VisionPharma</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <main>
+      <h1>Imprimante du poste</h1>
+      <p>Imprimante de tickets ESC/POS en réseau (80 mm). Sans imprimante configurée, le ticket passe par l'impression du système.</p>
+      <form id="form" class="card">
+        <label>Adresse de l'imprimante (IP:port, port 9100 en général)
+          <input id="address" placeholder="192.168.1.50:9100" autofocus />
+        </label>
+        <button type="submit">Enregistrer</button>
+        <button type="button" class="secondary" id="test">Imprimer un ticket de test</button>
+        <p id="status" role="status"></p>
+      </form>
+    </main>
+    <script src="printer.js"></script>
+  </body>
+</html>

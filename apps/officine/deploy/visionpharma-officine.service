@@ -1,0 +1,41 @@
+# Installation native sur Ubuntu Server 24.04 (spec §9, doc 06 §5) :
+#   sudo useradd --system --home /var/lib/visionpharma --shell /usr/sbin/nologin vpofficine
+#   sudo install -d -o vpofficine -g vpofficine -m 0700 /var/lib/visionpharma
+#   application compilée (npm ci && npm run build && npm prune --omit=dev) copiée dans /opt/visionpharma/releases/<version>, lien /opt/visionpharma/current
+#   sudo -u vpofficine node /opt/visionpharma/current/dist/scripts/init.js --data /var/lib/visionpharma
+#   sudo cp visionpharma-officine.service /etc/systemd/system/ && sudo systemctl enable --now visionpharma-officine
+[Unit]
+Description=VisionPharma Officine (serveur local)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=vpofficine
+Group=vpofficine
+WorkingDirectory=/opt/visionpharma/current
+Environment=NODE_ENV=production
+Environment=VP_DATA_DIR=/var/lib/visionpharma
+Environment=VP_WEB_DIST=/opt/visionpharma/current/web/dist
+Environment=VP_PORT=8443
+ExecStart=/usr/bin/node dist/server/src/main.js
+# B-04 : une restauration demandée depuis l'écran Système arrête proprement le service, qui redémarre.
+Restart=always
+RestartSec=2
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+PrivateDevices=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+RestrictSUIDSGID=yes
+LockPersonality=yes
+ReadWritePaths=/var/lib/visionpharma
+# Port 8443 : aucun privilège réseau requis.
+CapabilityBoundingSet=
+AmbientCapabilities=
+
+[Install]
+WantedBy=multi-user.target

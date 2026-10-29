@@ -32,6 +32,8 @@ declare module 'fastify' {
   }
   interface FastifyRequest {
     auth: AuthContext | null;
+    /** Poste appairé reconnu par son secret (W-02), ou null (navigateur). */
+    deviceId: string | null;
   }
   interface FastifyContextConfig {
     permission?: RoutePermission;
