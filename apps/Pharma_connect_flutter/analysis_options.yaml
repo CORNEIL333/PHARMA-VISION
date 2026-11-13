@@ -1,5 +1,0 @@
-include: package:flutter_lints/flutter.yaml
-
-linter:
-  rules:
-    # Add project-specific lint rules here when the app requirements are defined.
